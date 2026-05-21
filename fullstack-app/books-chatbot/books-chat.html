@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>📚 Books Chatbot — Arts & Philosophy</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#faf7f2; --warm:#f5efe4; --paper:#ede8df;
+  --ink:#2c2416; --muted:#8a7d6b; --border:#ddd5c6;
+  --gold:#b8860b; --teal:#2a7b6e; --rust:#c0392b;
+  --surface:#fff; --shadow:rgba(44,36,22,.10);
+}
+body{
+  font-family:'Georgia',serif;
+  background:linear-gradient(135deg,#2c2416 0%,#4a3728 40%,#2a3d35 100%);
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;
+  padding:28px 16px 48px;gap:18px;
+}
+
+/* ── Config bar ── */
+.cfg{
+  width:420px;background:rgba(250,247,242,.12);
+  border:1px solid rgba(250,247,242,.2);border-radius:14px;
+  padding:14px 16px;backdrop-filter:blur(8px);
+}
+.cfg-title{color:#faf7f2;font-size:13px;font-weight:bold;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.cfg-badge{font-size:10px;padding:2px 8px;border-radius:8px;font-family:sans-serif;}
+.badge-demo{background:#b8860b;color:#fff;}
+.badge-live{background:#2a7b6e;color:#fff;}
+.cfg-row{display:flex;gap:8px;}
+.cfg-input{
+  flex:1;padding:8px 12px;border-radius:9px;border:none;
+  font-size:13px;font-family:sans-serif;outline:none;
+  background:rgba(255,255,255,.92);color:var(--ink);
+}
+.cfg-input::placeholder{color:#aaa;}
+.cfg-btn{
+  padding:8px 14px;border-radius:9px;border:none;
+  font-size:12px;font-weight:bold;cursor:pointer;font-family:sans-serif;
+  background:var(--gold);color:#fff;white-space:nowrap;
+}
+.cfg-btn:hover{filter:brightness(1.1);}
+.cfg-hint{color:rgba(250,247,242,.6);font-size:11px;margin-top:6px;font-family:sans-serif;line-height:1.4;}
+
+/* ── Phone shell ── */
+.phone{
+  width:420px;height:820px;
+  background:var(--cream);border-radius:44px;
+  box-shadow:0 0 0 10px #1a110a,0 0 0 12px #3d2b1e,0 40px 80px rgba(0,0,0,.6);
+  overflow:hidden;display:flex;flex-direction:column;position:relative;
+}
+.notch{
+  width:120px;height:30px;background:#1a110a;
+  border-radius:0 0 18px 18px;
+  position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10;
+}
+.status-bar{
+  background:var(--cream);padding:14px 26px 6px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:bold;color:var(--ink);flex-shrink:0;
+  font-family:sans-serif;
+}
+.si{display:flex;gap:4px;font-size:10px;}
+
+/* ── Header ── */
+.header{
+  background:var(--ink);padding:12px 16px 14px;
+  display:flex;align-items:center;gap:11px;flex-shrink:0;
+}
+.header-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#b8860b,#d4a017);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.header-title{font-size:16px;font-weight:bold;color:#faf7f2;letter-spacing:.3px;}
+.header-sub{font-size:11px;color:rgba(250,247,242,.6);margin-top:2px;font-family:sans-serif;}
+.header-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.live-pill{
+  display:flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:bold;font-family:sans-serif;
+  padding:2px 8px;border-radius:8px;
+  background:rgba(255,255,255,.1);color:rgba(250,247,242,.8);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#b8860b;}
+.live-dot.online{background:#2a7b6e;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── Topic chips ── */
+.topics{
+  display:flex;gap:6px;padding:10px 14px;
+  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+  background:var(--warm);border-bottom:1px solid var(--border);
+}
+.topics::-webkit-scrollbar{display:none;}
+.topic{
+  padding:5px 13px;border-radius:16px;font-size:11px;font-weight:bold;
+  white-space:nowrap;cursor:pointer;border:none;
+  font-family:sans-serif;transition:all .2s;
+  background:var(--paper);color:var(--muted);border:1px solid var(--border);
+}
+.topic:hover{background:var(--ink);color:#faf7f2;border-color:var(--ink);}
+
+/* ── Messages ── */
+.messages{
+  flex:1;overflow-y:auto;padding:14px;
+  display:flex;flex-direction:column;gap:12px;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.messages::-webkit-scrollbar{width:4px;}
+.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+/* welcome card */
+.welcome{
+  background:var(--surface);border-radius:16px;
+  padding:20px;text-align:center;
+  border:1px solid var(--border);
+  box-shadow:0 2px 8px var(--shadow);
+}
+.welcome-icon{font-size:40px;margin-bottom:10px;}
+.welcome-title{font-size:17px;font-weight:bold;color:var(--ink);margin-bottom:6px;}
+.welcome-text{font-size:12px;color:var(--muted);line-height:1.6;font-family:sans-serif;margin-bottom:14px;}
+.welcome-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.welcome-tag{
+  padding:4px 10px;border-radius:12px;font-size:11px;font-family:sans-serif;
+  font-weight:bold;background:var(--warm);color:var(--gold);
+  border:1px solid rgba(184,134,11,.2);cursor:pointer;
+}
+.welcome-tag:hover{background:var(--gold);color:#fff;}
+
+.divider{
+  display:flex;align-items:center;gap:8px;padding:0 4px;
+}
+.divider span{font-size:10px;color:var(--muted);white-space:nowrap;font-family:sans-serif;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* row */
+.msg-row{display:flex;align-items:flex-end;gap:7px;}
+.msg-row.user{flex-direction:row-reverse;}
+.av{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.av.user-av{background:var(--ink);color:#faf7f2;font-size:10px;font-family:sans-serif;font-weight:bold;}
+.av.bot-av{background:linear-gradient(135deg,#b8860b,#d4a017);}
+
+.bubble{max-width:76%;padding:10px 14px;font-size:13px;line-height:1.6;}
+.bubble.user{
+  background:var(--ink);color:#faf7f2;
+  border-radius:16px 16px 3px 16px;
+  font-family:sans-serif;
+}
+.bubble.assistant{
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--border);
+  border-radius:16px 16px 16px 3px;
+  box-shadow:0 2px 6px var(--shadow);
+}
+.bubble strong{font-weight:bold;color:var(--gold);}
+.bubble em{font-style:italic;color:var(--teal);}
+.bubble code{
+  background:var(--paper);padding:1px 5px;
+  border-radius:4px;font-size:11px;font-family:monospace;color:var(--rust);
+}
+.bubble pre{
+  background:var(--paper);border-radius:8px;
+  padding:9px 11px;margin:7px 0;font-size:11px;
+  overflow-x:auto;font-family:monospace;line-height:1.5;
+}
+.bubble ul,.bubble ol{padding-left:16px;margin:5px 0;}
+.bubble li{margin-bottom:4px;}
+.bubble p{margin-bottom:5px;}
+.bubble p:last-child{margin-bottom:0;}
+.bubble h3{font-size:13px;color:var(--gold);margin:8px 0 4px;}
+
+/* book card inside bubble */
+.book-card{
+  background:var(--warm);border:1px solid var(--border);
+  border-radius:10px;padding:9px 11px;margin:6px 0;
+  border-left:3px solid var(--gold);
+}
+.book-card-title{font-size:13px;font-weight:bold;color:var(--ink);}
+.book-card-meta{font-size:11px;color:var(--muted);font-family:sans-serif;margin-top:2px;}
+
+.ts{font-size:9px;color:var(--muted);font-family:sans-serif;margin-top:2px;padding:0 4px;}
+.ts.user{text-align:right;}
+
+/* typing */
+.typing-row{display:flex;align-items:flex-end;gap:7px;}
+.typing{
+  display:flex;gap:4px;padding:12px 14px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px 16px 16px 3px;align-items:center;
+}
+.typing span{
+  width:6px;height:6px;border-radius:50%;background:var(--gold);
+  animation:blink 1.2s infinite;
+}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+
+/* ── Input ── */
+.input-area{
+  padding:10px 12px 22px;
+  background:var(--warm);border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.input-row{display:flex;gap:8px;align-items:flex-end;}
+.input-pill{
+  flex:1;background:var(--surface);border-radius:20px;
+  padding:10px 15px;border:1.5px solid var(--border);
+  transition:border-color .2s;
+}
+.input-pill:focus-within{border-color:var(--gold);}
+.input-pill textarea{
+  width:100%;border:none;background:transparent;
+  font-family:'Georgia',serif;font-size:13px;color:var(--ink);
+  resize:none;outline:none;max-height:80px;line-height:1.5;
+}
+.input-pill textarea::placeholder{color:var(--muted);}
+.send{
+  width:42px;height:42px;border-radius:50%;border:none;
+  background:var(--ink);color:#faf7f2;
+  font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s,background .2s;flex-shrink:0;
+}
+.send:hover{background:var(--gold);transform:scale(1.06);}
+.send:active{transform:scale(.93);}
+.send:disabled{background:var(--border)!important;cursor:not-allowed;transform:none;}
+.char-hint{font-size:10px;color:var(--muted);font-family:sans-serif;text-align:center;margin-top:6px;}
+
+/* toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#faf7f2;padding:10px 20px;border-radius:12px;
+  font-size:13px;font-family:sans-serif;z-index:999;
+  animation:fadeup .3s;pointer-events:none;
+}
+@keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- Config bar -->
+<div class="cfg">
+  <div class="cfg-title">
+    🔑 Backend URL
+    <span class="cfg-badge badge-demo" id="mode-badge">DEMO MODE</span>
+  </div>
+  <div class="cfg-row">
+    <input class="cfg-input" type="text" id="backend-url"
+      value="http://localhost:8000"
+      placeholder="http://localhost:8000  (Python FastAPI backend)"/>
+    <button class="cfg-btn" onclick="connectBackend()">Connect</button>
+  </div>
+  <div class="cfg-hint">
+    Demo mode works now — smart responses from an embedded books catalog.<br>
+    For real dataset answers, run the Python backend and connect above.
+  </div>
+</div>
+
+<!-- Phone -->
+<div class="phone">
+  <div class="notch"></div>
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="si"><span>●●●</span><span>WiFi</span><span>📚</span></div>
+  </div>
+
+  <div class="header">
+    <div class="header-icon">📚</div>
+    <div>
+      <div class="header-title">Books Librarian</div>
+      <div class="header-sub">Arts &amp; Philosophy · 1,000s of titles</div>
+    </div>
+    <div class="header-right">
+      <div class="live-pill" id="live-pill">
+        <div class="live-dot" id="live-dot"></div>
+        <span id="live-lbl">Demo</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="topics" id="topics"></div>
+
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🏛️</div>
+      <div class="welcome-title">Welcome to the Books Librarian</div>
+      <div class="welcome-text">
+        Ask me anything about arts and philosophy books —<br>
+        recommendations, summaries, authors, themes, or comparisons.
+      </div>
+      <div class="welcome-tags" id="welcome-tags"></div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <div class="input-pill">
+        <textarea id="msg-input" rows="1"
+          oninput="autoResize(this)"
+          onkeydown="handleKey(event)"
+          placeholder="Ask about a book, author, or theme…"></textarea>
+      </div>
+      <button class="send" id="send-btn" onclick="send()">➤</button>
+    </div>
+    <div class="char-hint">Press Enter to send · Shift+Enter for new line</div>
+  </div>
+</div>
+
+<script>
+// ── Embedded books dataset (arts & philosophy) ─────────────────────────────
+const BOOKS = [
+  {title:"Meditations",author:"Marcus Aurelius",year:"161 AD",genre:"Philosophy / Stoicism",pages:254,rating:4.8,description:"Personal writings of the Roman Emperor Marcus Aurelius, reflecting Stoic philosophy. One of the greatest works of practical philosophy, exploring duty, reason, and virtue."},
+  {title:"Thus Spoke Zarathustra",author:"Friedrich Nietzsche",year:"1883",genre:"Philosophy / Existentialism",pages:352,rating:4.5,description:"Nietzsche's seminal work introducing the Übermensch and the will to power, written in a lyrical, prophetic style. A foundational text of existentialist philosophy."},
+  {title:"The Republic",author:"Plato",year:"375 BC",genre:"Philosophy / Political Theory",pages:416,rating:4.6,description:"Plato's masterpiece exploring justice, the ideal state, and the philosopher-king. Contains the famous Allegory of the Cave. Essential reading in Western philosophy."},
+  {title:"Critique of Pure Reason",author:"Immanuel Kant",year:"1781",genre:"Philosophy / Epistemology",pages:784,rating:4.3,description:"Kant's monumental work on metaphysics and epistemology, arguing that space and time are forms of our intuition rather than properties of things in themselves."},
+  {title:"Being and Time",author:"Martin Heidegger",year:"1927",genre:"Philosophy / Existentialism",pages:589,rating:4.2,description:"Heidegger's exploration of the meaning of Being and human existence (Dasein). Profoundly influenced existentialism, hermeneutics, and continental philosophy."},
+  {title:"Beyond Good and Evil",author:"Friedrich Nietzsche",year:"1886",genre:"Philosophy / Ethics",pages:240,rating:4.6,description:"Nietzsche's critique of past philosophers and his articulation of new philosophical perspectives, challenging conventional morality and the nature of truth."},
+  {title:"The Birth of Tragedy",author:"Friedrich Nietzsche",year:"1872",genre:"Philosophy / Aesthetics",pages:176,rating:4.4,description:"Nietzsche's analysis of Greek tragedy, introducing the Apollonian/Dionysian duality. A cornerstone of aesthetic philosophy and cultural criticism."},
+  {title:"Nicomachean Ethics",author:"Aristotle",year:"350 BC",genre:"Philosophy / Ethics",pages:368,rating:4.5,description:"Aristotle's foundational work on ethics, exploring virtue, happiness (eudaimonia), and the good life. The basis of virtue ethics still influential today."},
+  {title:"The Symposium",author:"Plato",year:"385 BC",genre:"Philosophy / Aesthetics",pages:128,rating:4.7,description:"A series of speeches on the nature of love (Eros) by figures including Socrates and Aristophanes. Plato's most accessible and beautiful dialogue."},
+  {title:"Phenomenology of Spirit",author:"G.W.F. Hegel",year:"1807",genre:"Philosophy / Idealism",pages:592,rating:4.1,description:"Hegel's most complex work tracing the development of consciousness from immediate experience to Absolute Knowledge. Foundational for German Idealism."},
+  {title:"Being and Nothingness",author:"Jean-Paul Sartre",year:"1943",genre:"Philosophy / Existentialism",pages:688,rating:4.3,description:"Sartre's major philosophical work establishing existentialism, arguing that 'existence precedes essence' and examining human freedom and responsibility."},
+  {title:"The Stranger",author:"Albert Camus",year:"1942",genre:"Philosophy / Absurdism",pages:123,rating:4.6,description:"Camus's iconic novel illustrating the philosophy of the absurd through Meursault, a man who commits murder and faces execution with detached indifference."},
+  {title:"The Myth of Sisyphus",author:"Albert Camus",year:"1942",genre:"Philosophy / Absurdism",pages:212,rating:4.6,description:"Camus's philosophical essay on the absurd — the conflict between humans' desire for meaning and the universe's silence. Argues we must imagine Sisyphus happy."},
+  {title:"Tao Te Ching",author:"Lao Tzu",year:"400 BC",genre:"Philosophy / Taoism",pages:112,rating:4.8,description:"The foundational text of Taoism, 81 short chapters exploring the nature of the Tao (the Way), virtue, and the art of living in harmony with the universe."},
+  {title:"The Art of War",author:"Sun Tzu",year:"500 BC",genre:"Philosophy / Strategy",pages:273,rating:4.5,description:"Ancient Chinese military treatise on strategy and tactics. Its insights on conflict, leadership, and adaptability have influenced business, law, and philosophy."},
+  {title:"The Analects",author:"Confucius",year:"475 BC",genre:"Philosophy / Confucianism",pages:224,rating:4.5,description:"A collection of Confucius's sayings compiled by his disciples, covering ethics, education, government, and the cultivation of virtue (ren)."},
+  {title:"A Treatise of Human Nature",author:"David Hume",year:"1739",genre:"Philosophy / Empiricism",pages:576,rating:4.3,description:"Hume's attempt to apply the scientific method to human nature, covering knowledge, passions, and morality. Foundational for empiricism and skepticism."},
+  {title:"The Story of Art",author:"E.H. Gombrich",year:"1950",genre:"Art History",pages:688,rating:4.8,description:"The world's most popular art book, tracing the history of art from ancient Egypt to the 20th century. Essential reading for anyone interested in visual art."},
+  {title:"Ways of Seeing",author:"John Berger",year:"1972",genre:"Art Criticism / Visual Culture",pages:176,rating:4.6,description:"Berger's influential critique of how we look at art, exploring how images are reproduced, the male gaze in painting, and the language of advertising."},
+  {title:"The Shock of the New",author:"Robert Hughes",year:"1980",genre:"Art History / Modernism",pages:444,rating:4.7,description:"Hughes's brilliant survey of modern art from Impressionism to Abstract Expressionism, originally a BBC television series. Passionate and authoritative."},
+  {title:"Seven Days in the Art World",author:"Sarah Thornton",year:"2008",genre:"Contemporary Art",pages:288,rating:4.2,description:"An ethnographic journey through the art world — auctions, art fairs, studios, and biennales. A fascinating insider account of how contemporary art works."},
+  {title:"The Painted Word",author:"Tom Wolfe",year:"1975",genre:"Art Criticism",pages:144,rating:4.1,description:"Wolfe's witty polemic arguing that modern art became so dependent on critical theory that the word superseded the image. A provocative read."},
+  {title:"Art as Experience",author:"John Dewey",year:"1934",genre:"Philosophy / Aesthetics",pages:371,rating:4.3,description:"Dewey's pragmatist aesthetics arguing that art is not separate from everyday experience but grows out of it. Highly influential in art education."},
+  {title:"The Work of Art in the Age of Mechanical Reproduction",author:"Walter Benjamin",year:"1935",genre:"Philosophy / Aesthetics",pages:50,rating:4.6,description:"Benjamin's seminal essay on how reproduction technologies change our relationship to art, introducing the concept of 'aura' and discussing film and photography."},
+  {title:"The Second Sex",author:"Simone de Beauvoir",year:"1949",genre:"Philosophy / Feminism",pages:800,rating:4.6,description:"de Beauvoir's foundational feminist text analyzing women's oppression through existentialist philosophy. 'One is not born, but rather becomes, a woman.'"},
+  {title:"Critique of Judgment",author:"Immanuel Kant",year:"1790",genre:"Philosophy / Aesthetics",pages:432,rating:4.3,description:"Kant's exploration of aesthetic judgment and teleology, arguing that beauty is universally communicable but subjective. The founding text of modern aesthetics."},
+  {title:"The Poetics",author:"Aristotle",year:"335 BC",genre:"Philosophy / Aesthetics",pages:128,rating:4.6,description:"Aristotle's analysis of drama and epic poetry, introducing concepts of mimesis, catharsis, and the unities. Foundational for literary and dramatic theory."},
+  {title:"On the Genealogy of Morality",author:"Friedrich Nietzsche",year:"1887",genre:"Philosophy / Ethics",pages:192,rating:4.6,description:"Three essays tracing the historical origins of morality, master-slave ethics, guilt and bad conscience, and the ascetic ideal. Nietzsche at his most polemical."},
+  {title:"Plato's Dialogues: Phaedo",author:"Plato",year:"360 BC",genre:"Philosophy / Metaphysics",pages:112,rating:4.7,description:"Plato's account of Socrates' final hours, arguing for the immortality of the soul and the Theory of Forms. One of the most moving works in philosophy."},
+  {title:"The Communist Manifesto",author:"Karl Marx & Friedrich Engels",year:"1848",genre:"Philosophy / Politics",pages:112,rating:4.3,description:"The founding document of Marxism, analyzing class struggle and calling for proletarian revolution. One of the most influential political texts ever written."},
+  {title:"Fear and Trembling",author:"Søren Kierkegaard",year:"1843",genre:"Philosophy / Existentialism",pages:192,rating:4.5,description:"Kierkegaard's meditation on faith and ethics through the story of Abraham and Isaac, introducing the 'teleological suspension of the ethical'. Proto-existentialist."},
+  {title:"Discipline and Punish",author:"Michel Foucault",year:"1975",genre:"Philosophy / Sociology",pages:352,rating:4.5,description:"Foucault's history of the modern penal system and the birth of the prison, analyzing how power operates through surveillance, normalization, and discipline."},
+];
+
+// ── Demo responses (smart keyword matching) ───────────────────────────────
+function findBooks(query) {
+  const q = query.toLowerCase();
+  const words = q.split(/\s+/).filter(w => w.length > 2);
+
+  return BOOKS.map(b => {
+    let score = 0;
+    const text = `${b.title} ${b.author} ${b.genre} ${b.description}`.toLowerCase();
+    for (const w of words) {
+      if (text.includes(w)) score += (b.title.toLowerCase().includes(w) ? 3 : 1);
+    }
+    return { ...b, score };
+  })
+  .filter(b => b.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 5);
+}
+
+function demoReply(msg) {
+  const q = msg.toLowerCase();
+  const found = findBooks(msg);
+
+  // ── Specific author queries ──────────────────────────────────────────
+  if (q.includes('nietzsche')) {
+    const nb = BOOKS.filter(b => b.author.toLowerCase().includes('nietzsche'));
+    return `**Friedrich Nietzsche** wrote some of the most electrifying philosophy in history. Here are his key works in our catalog:\n\n${nb.map(b => `📖 **${b.title}** (${b.year})\n${b.description}`).join('\n\n')}\n\n**Where to start?** *Beyond Good and Evil* is his most accessible; *Thus Spoke Zarathustra* is his most ambitious and poetic.`;
+  }
+  if (q.includes('plato')) {
+    const pb = BOOKS.filter(b => b.author.toLowerCase().includes('plato'));
+    return `**Plato's** dialogues are the foundation of Western philosophy. From our catalog:\n\n${pb.map(b => `📖 **${b.title}** (${b.year})\n${b.description}`).join('\n\n')}\n\n**Recommended reading order:** *The Symposium* → *Phaedo* → *The Republic*. Start with The Symposium — it's the most beautiful.`;
+  }
+  if (q.includes('camus') || q.includes('absurd')) {
+    return `**Albert Camus** and the philosophy of the absurd:\n\n📖 **The Stranger** (1942)\n${BOOKS.find(b=>b.title==='The Stranger').description}\n\n📖 **The Myth of Sisyphus** (1942)\n${BOOKS.find(b=>b.title==='The Myth of Sisyphus').description}\n\n**Camus's core idea:** Life has no inherent meaning, but instead of despair, we should embrace the absurd and live fully. "One must imagine Sisyphus happy."`;
+  }
+  if (q.includes('stoic') || q.includes('marcus aurelius') || q.includes('meditation')) {
+    const m = BOOKS.find(b=>b.title==='Meditations');
+    return `📖 **Meditations** by Marcus Aurelius\n\n${m.description}\n\n**Why read it today?** Written as a private journal — never meant for publication. Marcus Aurelius was one of the most powerful men alive, yet spent his evenings writing reminders to himself about humility, duty, and accepting what he couldn't control.\n\n**Key Stoic ideas you'll find:**\n- Focus only on what is in your control\n- Accept death and impermanence calmly\n- Your mind is your only true possession\n- Act for the good of all humanity\n\n**Rating:** ${m.rating}/5 ⭐ — consistently rated one of the most life-changing books ever written.`;
+  }
+  if (q.includes('foucault') || q.includes('power') || q.includes('discipline')) {
+    const f = BOOKS.find(b=>b.title==='Discipline and Punish');
+    return `📖 **Discipline and Punish** by Michel Foucault (1975)\n\n${f.description}\n\n**Key concept — the Panopticon:** Foucault uses Bentham's prison design (where prisoners can always be seen but never see the guard) as a metaphor for modern power. We discipline *ourselves* because we might be watched.\n\n**Why it matters:** Foucault shows that power doesn't just repress — it produces knowledge, categories, and "normal" behavior. Relevant to schools, hospitals, social media.\n\n**Rating:** ${f.rating}/5 ⭐`;
+  }
+
+  // ── Topic queries ───────────────────────────────────────────────────
+  if (q.includes('recommend') || q.includes('start') || q.includes('begin') || q.includes('best')) {
+    const recs = [
+      BOOKS.find(b=>b.title==='Meditations'),
+      BOOKS.find(b=>b.title==='The Story of Art'),
+      BOOKS.find(b=>b.title==='The Symposium'),
+      BOOKS.find(b=>b.title==='Ways of Seeing'),
+      BOOKS.find(b=>b.title==='The Myth of Sisyphus'),
+    ];
+    return `**My top 5 recommendations for beginners in arts & philosophy:**\n\n${recs.map((b,i)=>`**${i+1}. ${b.title}** — *${b.author}*\n${b.description.split('.')[0]}. ⭐ ${b.rating}/5`).join('\n\n')}\n\n*Meditations* and *The Story of Art* are the most universally accessible starting points.`;
+  }
+  if (q.includes('existential') || q.includes('existence') || q.includes('meaning')) {
+    const eb = BOOKS.filter(b => b.genre.toLowerCase().includes('existential') || b.author.includes('Sartre') || b.author.includes('Camus') || b.author.includes('Kierkegaard') || b.author.includes('Heidegger'));
+    return `**Existentialist philosophy** — the tradition questioning how to find meaning in a universe without inherent purpose:\n\n${eb.map(b=>`📖 **${b.title}** — *${b.author}* (${b.year})\n${b.description.split('.')[0]}.`).join('\n\n')}\n\n**Reading path:** Kierkegaard (proto-existentialism) → Heidegger (Being) → Sartre (existence precedes essence) → Camus (absurdism as a response).`;
+  }
+  if (q.includes('art histor') || q.includes('visual art') || q.includes('painting') || q.includes('artist')) {
+    const ab = BOOKS.filter(b => b.genre.toLowerCase().includes('art'));
+    return `**Arts books in our catalog:**\n\n${ab.map(b=>`📖 **${b.title}** — *${b.author}* (${b.year}) ⭐ ${b.rating}\n${b.description.split('.')[0]}.`).join('\n\n')}\n\n**Start with** *The Story of Art* by Gombrich — it's the most comprehensive introduction and has never been out of print since 1950.`;
+  }
+  if (q.includes('ethic') || q.includes('moral') || q.includes('virtue') || q.includes('good life')) {
+    const ethics = BOOKS.filter(b => b.genre.toLowerCase().includes('ethic') || b.title.includes('Ethics') || b.title.includes('Genealogy') || b.title.includes('Good and Evil'));
+    return `**Ethics and moral philosophy** — how should we live?\n\n${ethics.map(b=>`📖 **${b.title}** — *${b.author}*\n${b.description.split('.')[0]}.`).join('\n\n')}\n\n**Three traditions:**\n- **Virtue ethics** (Aristotle): be a good person, cultivate character\n- **Deontology** (Kant): follow universal rules regardless of outcome\n- **Nietzsche's challenge**: all morality is will to power — question everything`;
+  }
+  if (q.includes('eastern') || q.includes('tao') || q.includes('confuc') || q.includes('buddhis') || q.includes('chinese') || q.includes('asian')) {
+    const east = BOOKS.filter(b => b.genre.toLowerCase().includes('tao') || b.genre.toLowerCase().includes('confuc') || b.author.includes('Lao') || b.author.includes('Confucius') || b.author.includes('Sun Tzu'));
+    return `**Eastern philosophy** in our catalog:\n\n${east.map(b=>`📖 **${b.title}** — *${b.author}* (${b.year})\n${b.description}`).join('\n\n')}\n\n**Key contrast with Western philosophy:** Eastern traditions tend to emphasize harmony, acceptance, and the dissolution of the self rather than individual reason and assertion.`;
+  }
+  if (q.includes('aesthet') || q.includes('beauty') || q.includes('sublime') || q.includes('art theory')) {
+    const aes = BOOKS.filter(b => b.genre.toLowerCase().includes('aesthet'));
+    return `**Aesthetic philosophy** — what is beauty? What is art?\n\n${aes.map(b=>`📖 **${b.title}** — *${b.author}* (${b.year})\n${b.description.split('.')[0]}.`).join('\n\n')}\n\n**The core debate:** Is beauty objective (Kant) or subjective? Is art about representation (Aristotle), expression (Romantics), or concept (Duchamp)?`;
+  }
+
+  // ── Specific book queries ────────────────────────────────────────────
+  if (found.length > 0) {
+    const top = found[0];
+    const others = found.slice(1,3);
+    let reply = `📖 **${top.title}**\n*by ${top.author}* · ${top.year} · ${top.pages} pages · ⭐ ${top.rating}/5\n\n${top.description}\n\n**Genre:** ${top.genre}`;
+    if (others.length > 0) {
+      reply += `\n\n---\n**You might also like:**\n${others.map(b=>`• **${b.title}** by ${b.author} — ${b.description.split('.')[0]}.`).join('\n')}`;
+    }
+    return reply;
+  }
+
+  // ── Fallback ─────────────────────────────────────────────────────────
+  return `I'm specialized in arts and philosophy books. You can ask me about:\n\n• 📖 **Specific books** — "Tell me about Meditations"\n• ✍️ **Authors** — "What did Nietzsche write?"\n• 🎨 **Art history** — "Best books on modern art"\n• 🏛️ **Philosophy topics** — "Books on existentialism"\n• ⭐ **Recommendations** — "What should I read first?"\n\nTry one of the suggestions above or ask about any philosopher or art movement!`;
+}
+
+// ── Quick topics ──────────────────────────────────────────────────────────
+const TOPICS = [
+  {label:"📖 Stoicism",q:"Tell me about Stoicism books"},
+  {label:"🎨 Art History",q:"Best art history books"},
+  {label:"⚡ Nietzsche",q:"What did Nietzsche write?"},
+  {label:"🏛️ Plato",q:"Plato's philosophy books"},
+  {label:"🌀 Existentialism",q:"Books on existentialism"},
+  {label:"☯️ Eastern Philosophy",q:"Eastern philosophy books"},
+  {label:"💡 Where to start?",q:"Recommend books for a beginner"},
+  {label:"🖼️ Modern Art",q:"Books on modern art criticism"},
+];
+
+const QUICK_TAGS = [
+  "What is the best philosophy book for beginners?",
+  "Tell me about Meditations by Marcus Aurelius",
+  "Recommend 3 art books",
+  "Who was Nietzsche and what did he believe?",
+  "Books about existentialism",
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+let BASE = null;
+let history = [];
+let sending = false;
+
+// ── Init ──────────────────────────────────────────────────────────────────
+function init() {
+  document.getElementById('topics').innerHTML = TOPICS.map(t =>
+    `<button class="topic" onclick="useTopic('${t.q.replace(/'/g,"\\'")}')">
+      ${t.label}
+    </button>`
+  ).join('');
+
+  document.getElementById('welcome-tags').innerHTML = QUICK_TAGS.map(t =>
+    `<span class="welcome-tag" onclick="useTag('${t.replace(/'/g,"\\'")}')">
+      ${t.length > 38 ? t.slice(0,35)+'…' : t}
+    </span>`
+  ).join('');
+}
+
+async function connectBackend() {
+  const url = document.getElementById('backend-url').value.trim().replace(/\/$/,'');
+  try {
+    const r = await fetch(`${url}/health`);
+    if (!r.ok) throw new Error('Not OK');
+    const data = await r.json();
+    BASE = url;
+    document.getElementById('mode-badge').className = 'cfg-badge badge-live';
+    document.getElementById('mode-badge').textContent = 'LIVE';
+    document.getElementById('live-dot').classList.add('online');
+    document.getElementById('live-lbl').textContent = 'Live';
+    showToast(`✅ Connected — ${data.arts_philosophy_books?.toLocaleString() || '?'} arts & philosophy books loaded`);
+  } catch {
+    showToast('❌ Could not connect. Is the Python backend running on that URL?');
+  }
+}
+
+function useTopic(q) { document.getElementById('msg-input').value = q; send(); }
+function useTag(q) { document.getElementById('msg-input').value = q; send(); }
+
+// ── Chat ──────────────────────────────────────────────────────────────────
+async function send() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text || sending) return;
+
+  sending = true;
+  input.value = ''; input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+  document.getElementById('welcome')?.remove();
+
+  history.push({role:'user', content:text});
+  addBubble('user', text);
+
+  await sleep(120);
+  showTyping();
+
+  if (BASE) {
+    await callBackend(text);
+  } else {
+    await sleep(600 + Math.random() * 500);
+    removeTyping();
+    const reply = demoReply(text);
+    history.push({role:'assistant', content:reply});
+    addBubble('assistant', reply);
+  }
+
+  sending = false;
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+async function callBackend(text) {
+  try {
+    const res = await fetch(`${BASE}/chat`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message: text,
+        history: history.slice(0,-1),
+      }),
+    });
+
+    removeTyping();
+    const bubble = addBubble('assistant', '');
+    const msgs = document.getElementById('messages');
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '', full = '';
+
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, {stream:true});
+      const lines = buf.split('\n'); buf = lines.pop();
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const d = line.slice(6).trim();
+          if (d === '[DONE]') break;
+          try {
+            const p = JSON.parse(d);
+            if (p.text) { full += p.text; bubble.innerHTML = renderMd(full); msgs.scrollTop = msgs.scrollHeight; }
+          } catch {}
+        }
+      }
+    }
+    history.push({role:'assistant', content:full});
+  } catch(e) {
+    removeTyping();
+    addBubble('assistant', `❌ Backend error: ${e.message}`);
+  }
+}
+
+// ── DOM helpers ───────────────────────────────────────────────────────────
+function addBubble(role, text, animate=true) {
+  const msgs = document.getElementById('messages');
+  const isUser = role === 'user';
+  const wrap = document.createElement('div');
+
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+  if (animate) { row.style.cssText = 'opacity:0;transform:translateY(8px);transition:all .22s'; }
+
+  const av = document.createElement('div');
+  av.className = `av ${isUser?'user-av':'bot-av'}`;
+  av.textContent = isUser ? 'You' : '📚';
+
+  const bubble = document.createElement('div');
+  bubble.className = `bubble ${role}`;
+  if (isUser) { bubble.textContent = text; }
+  else { bubble.innerHTML = renderMd(text); }
+
+  row.appendChild(av); row.appendChild(bubble);
+  wrap.appendChild(row);
+
+  const ts = document.createElement('div');
+  ts.className = `ts ${role}`; ts.textContent = now();
+  wrap.appendChild(ts);
+
+  msgs.appendChild(wrap);
+  if (animate) requestAnimationFrame(()=>{ row.style.opacity='1'; row.style.transform='translateY(0)'; });
+  msgs.scrollTop = msgs.scrollHeight;
+  return bubble;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'typing-row'; row.id = 'typing';
+  const av = document.createElement('div');
+  av.className = 'av bot-av'; av.textContent = '📚';
+  const t = document.createElement('div'); t.className = 'typing';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  row.appendChild(av); row.appendChild(t);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function removeTyping() { document.getElementById('typing')?.remove(); }
+
+// ── Utilities ─────────────────────────────────────────────────────────────
+function renderMd(t) {
+  return t
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
+    .replace(/`([^`\n]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g,'<em>$1</em>')
+    .replace(/^📖 \*\*(.+?)\*\*/gm,'<h3>📖 $1</h3>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/^• (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, s=>`<ul>${s}</ul>`)
+    .replace(/\n---\n/g,'<hr style="border:none;border-top:1px solid #ddd5c6;margin:10px 0">')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>')
+    .replace(/^(?!<[a-z])/,'<p>').replace(/(?<![>])$/,'</p>');
+}
+
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+function now() { return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,80)+'px'; }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
+function showToast(msg) {
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),3500);
+}
+
+init();
+</script>
+</body>
+</html>
