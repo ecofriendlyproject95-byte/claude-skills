@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Chat Screen Preview</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f6ff;
+  --surface:#ffffff;
+  --border:#eaebf5;
+  --text:#1a1c2e;
+  --muted:#8b90a7;
+  --radius:20px;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:32px 16px 48px;
+  gap:28px;
+}
+
+/* ── Agent switcher ── */
+.agent-switcher{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+}
+.agent-pill{
+  padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;
+  cursor:pointer;border:2px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.15);color:#fff;
+  transition:all .2s;backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:6px;
+}
+.agent-pill:hover{background:rgba(255,255,255,0.28);}
+.agent-pill.active{background:#fff;border-color:#fff;}
+
+/* ── Phone ── */
+.phone{
+  width:390px;
+  height:820px;
+  background:var(--bg);
+  border-radius:48px;
+  box-shadow:0 0 0 12px #1a1a2e,0 0 0 14px #2e2e50,0 48px 96px rgba(0,0,0,.55);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.notch{
+  width:126px;height:34px;
+  background:#1a1a2e;border-radius:0 0 22px 22px;
+  position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10;
+}
+.status-bar{
+  background:var(--bg);padding:16px 28px 8px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;font-weight:700;color:var(--text);flex-shrink:0;
+}
+.status-icons{display:flex;gap:5px;align-items:center;font-size:11px;}
+
+/* ── Chat layout ── */
+.chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* header */
+.chat-header{
+  padding:10px 16px 12px;
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.back-btn{
+  background:none;border:none;cursor:pointer;
+  font-size:22px;color:var(--text);padding:2px 6px 2px 0;line-height:1;
+}
+.agent-avatar{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.hd-name{font-size:15px;font-weight:800;color:var(--text);}
+.hd-domain{font-size:11px;font-weight:600;margin-top:1px;}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.dot-menu{
+  background:none;border:none;cursor:pointer;
+  font-size:20px;color:var(--muted);padding:4px;
+}
+.online-badge{
+  display:flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:600;color:#10b981;
+}
+.online-dot{width:7px;height:7px;border-radius:50%;background:#10b981;}
+
+/* messages */
+.messages{
+  flex:1;overflow-y:auto;padding:14px 16px 8px;
+  display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:none;
+}
+.messages::-webkit-scrollbar{display:none;}
+
+/* date divider */
+.divider{
+  display:flex;align-items:center;gap:10px;margin:4px 0;
+}
+.divider span{
+  font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* message rows */
+.msg-row{display:flex;align-items:flex-end;gap:8px;}
+.msg-row.user{flex-direction:row-reverse;}
+.av{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0;
+}
+.bubble{
+  max-width:73%;padding:10px 14px;
+  font-size:14px;line-height:1.55;
+  position:relative;
+}
+.bubble.assistant{
+  background:var(--surface);color:var(--text);
+  border:1px solid var(--border);
+  border-radius:18px 18px 18px 4px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.bubble.user{
+  color:#fff;
+  border-radius:18px 18px 4px 18px;
+}
+.bubble strong{font-weight:700;}
+.bubble code{
+  background:rgba(0,0,0,.07);padding:1px 5px;
+  border-radius:5px;font-size:12px;font-family:'Courier New',monospace;
+}
+.bubble pre{
+  background:rgba(0,0,0,.06);border-radius:10px;
+  padding:10px 12px;margin:8px 0;font-size:12px;
+  overflow-x:auto;line-height:1.5;
+}
+.bubble ul{padding-left:16px;margin:4px 0;}
+.bubble li{margin-bottom:4px;}
+.bubble p{margin-bottom:5px;}
+.bubble p:last-child{margin-bottom:0;}
+.bubble h3{font-size:13px;font-weight:700;margin:8px 0 4px;}
+
+/* timestamp */
+.ts{font-size:10px;color:var(--muted);margin-top:3px;text-align:right;}
+.msg-row.assistant .ts{text-align:left;padding-left:36px;}
+
+/* typing */
+.typing{
+  display:flex;gap:5px;padding:12px 16px;
+  background:var(--surface);
+  border-radius:18px 18px 18px 4px;
+  border:1px solid var(--border);
+  width:fit-content;align-items:center;
+}
+.typing span{
+  width:7px;height:7px;border-radius:50%;
+  animation:blink 1.2s infinite;
+}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+/* input bar */
+.input-bar{
+  padding:10px 14px 28px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  display:flex;align-items:flex-end;gap:10px;
+  flex-shrink:0;
+}
+.input-pill{
+  flex:1;background:#f3f4fa;border-radius:26px;
+  padding:10px 16px;border:1.5px solid transparent;
+  transition:border-color .2s,background .2s;
+}
+.input-pill:focus-within{border-color:var(--accent,#6366f1);background:#fff;}
+.input-pill textarea{
+  width:100%;border:none;background:transparent;
+  font-family:inherit;font-size:14px;color:var(--text);
+  resize:none;outline:none;max-height:90px;line-height:1.5;
+}
+.input-pill textarea::placeholder{color:var(--muted);}
+.send{
+  width:44px;height:44px;border-radius:50%;border:none;
+  color:#fff;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s,box-shadow .15s;
+  flex-shrink:0;
+}
+.send:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.send:active{transform:scale(.95);}
+
+/* attachment row */
+.attach-row{
+  display:flex;gap:8px;padding:8px 16px 0;
+  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+.attach-row::-webkit-scrollbar{display:none;}
+.attach-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;
+  white-space:nowrap;cursor:pointer;border:none;
+  transition:opacity .2s;
+}
+.attach-chip:hover{opacity:.8;}
+
+/* reaction */
+.reaction{
+  position:absolute;bottom:-10px;right:8px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:20px;padding:2px 6px;font-size:11px;
+}
+</style>
+</head>
+<body>
+
+<!-- Agent switcher -->
+<div class="agent-switcher" id="switcher"></div>
+
+<!-- Phone -->
+<div class="phone">
+  <div class="notch"></div>
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <span>●●●</span><span>WiFi</span><span>🔋 97%</span>
+    </div>
+  </div>
+
+  <div class="chat-wrap">
+    <!-- header -->
+    <div class="chat-header">
+      <button class="back-btn">‹</button>
+      <div class="agent-avatar" id="hd-icon"></div>
+      <div>
+        <div class="hd-name" id="hd-name"></div>
+        <div class="hd-domain" id="hd-domain"></div>
+      </div>
+      <div class="hd-right">
+        <div class="online-badge"><div class="online-dot"></div>Online</div>
+        <button class="dot-menu">⋮</button>
+      </div>
+    </div>
+
+    <!-- quick-action chips -->
+    <div class="attach-row" id="quick-chips"></div>
+
+    <!-- messages -->
+    <div class="messages" id="messages"></div>
+
+    <!-- input -->
+    <div class="input-bar">
+      <div class="input-pill">
+        <textarea id="msg-input" rows="1" placeholder=""
+          oninput="autoResize(this)"
+          onkeydown="handleKey(event)"></textarea>
+      </div>
+      <button class="send" id="send-btn" onclick="send()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Agent definitions ──────────────────────────────────────────────────────
+const AGENTS = [
+  {
+    slug:'cs-senior-engineer', name:'Senior Engineer', domain:'Engineering',
+    icon:'⚙️', color:'#3B82F6',
+    chips:['Review my code','Suggest architecture','Spot the bug'],
+    seed:[
+      {r:'user',t:'I need to design a REST API for a mobile app. Should I use GraphQL or REST?'},
+      {r:'assistant',t:`Good question — and the honest answer is: **it depends on who's consuming it**.
+
+Here's my quick framework:
+
+**Choose REST when:**
+- Simple CRUD operations dominate
+- Team is small / junior
+- Caching matters (CDN-friendly)
+- You want low ops overhead
+
+**Choose GraphQL when:**
+- Multiple clients (iOS, Android, web) need different data shapes
+- You want to avoid N+1 round trips on mobile
+- Your data model is highly relational
+
+For a mobile app with 2 clients, I'd start with **REST + a few composite endpoints** to avoid over-fetching. You can migrate select endpoints to GraphQL later if needed.
+
+What does your data model look like?`},
+      {r:'user',t:'We have users, posts, and comments. Very standard social feed.'},
+      {r:'assistant',t:`Classic feed architecture. Here's the endpoint set I'd start with:
+
+\`\`\`
+GET  /feed          → paginated posts + author summary
+GET  /posts/:id     → full post + top comments
+POST /posts         → create post
+POST /posts/:id/comments
+DELETE /posts/:id
+\`\`\`
+
+**Key decisions:**
+- Use **cursor pagination** (not offset) for the feed — infinite scroll breaks with offset when new posts arrive
+- Return a **summary author object** inline with each post to avoid a second request
+- Keep comments **lazy-loaded** on the feed, eager on the detail view
+
+Want me to spec out the response schemas?`},
+    ]
+  },
+  {
+    slug:'cs-ceo-advisor', name:'CEO Advisor', domain:'C-Level',
+    icon:'👔', color:'#1D4ED8',
+    chips:['Fundraising strategy','Board advice','Hire or promote?'],
+    seed:[
+      {r:'user',t:'We just hit $500K ARR growing 15% MoM. Should we raise a seed round now or wait until $1M ARR?'},
+      {r:'assistant',t:`**Raise now.** Here's my reasoning:
+
+At 15% MoM you're compounding roughly **5.4× ARR over the next 12 months** — that's ~$2.7M ARR if the curve holds. Investors price that trajectory, not today's number.
+
+The risk of waiting to $1M:
+- Growth rates almost always **compress** as you scale
+- You'll raise a bigger round but at a lower growth multiple
+- 6–9 months of diluted focus during the raise
+
+**What to do this week:**
+1. Get three months of clean MRR data (with churn broken out)
+2. Define your "why now" narrative — what does the capital unlock that you can't get organically?
+3. Build a target list of 20 seed funds who have written $1–3M first checks in your space
+
+What's your churn rate, and do you have a lead investor in mind?`},
+      {r:'user',t:'Monthly churn is around 3.5%. No lead yet, just started outreach.'},
+      {r:'assistant',t:`**3.5% monthly churn is your problem to solve before the raise**, not after.
+
+That's ~35% annual logo churn. Most seed investors will flag this immediately. The story you want is retention improving as you find PMF — right now it's moving the wrong direction.
+
+**My recommendation:**
+- **Delay the raise by 60 days.** Use that time to cut churn to <2% monthly (or show a clear inflection downward)
+- Do **10 churned customer interviews** this week — find the pattern
+- Fix the top 2 reasons before you walk into a meeting
+
+The silver lining: if you fix this, your raise gets meaningfully easier and you'll command a higher valuation. Investors will see a founder who diagnoses before they fundraise.
+
+What does your onboarding look like right now?`},
+    ]
+  },
+  {
+    slug:'cs-product-manager', name:'Product Manager', domain:'Product',
+    icon:'🗺️', color:'#059669',
+    chips:['Write a PRD','Prioritize roadmap','Define metrics'],
+    seed:[
+      {r:'user',t:'My team is debating whether to build a mobile app or improve the web product first. How do I decide?'},
+      {r:'assistant',t:`Frame this as a **where is your customer** question, not a platform preference question.
+
+Answer these three things:
+
+1. **Where do users currently struggle most?** — Pull your support tickets and session recordings. Is the friction happening on web or mobile?
+2. **What does your acquisition data say?** — Where does traffic come from? What % of signups happen on mobile?
+3. **What does retention look like by device?** — If mobile web retention is significantly lower than desktop, that's your signal.
+
+My guess: if you're B2B SaaS, the web product is almost always the right call first. If you're consumer or have a daily-use case, mobile may be table stakes.
+
+What does your current traffic split look like between desktop and mobile?`},
+      {r:'user',t:'About 60% desktop, 40% mobile. But mobile conversion is only 12% vs 34% on desktop.'},
+      {r:'assistant',t:`**That gap is your answer.** You're leaving massive conversion on the table on mobile — fix that first.
+
+A 22-point conversion gap typically means one of three things:
+- The signup/onboarding flow is broken on mobile (most common)
+- The value prop isn't visible above the fold on small screens
+- A specific step is failing (payment form, email verification, etc.)
+
+**Before you build a native app:**
+- Run a **5-user mobile usability test** on your current signup flow
+- Check your funnel drop-off by step on mobile vs desktop in your analytics
+- A responsive redesign of the critical path (signup → aha moment) will move faster and cost less than a native app
+
+Once mobile conversion is within 5–8 points of desktop, *then* evaluate native. At that point you're optimizing engagement, not fixing conversion.
+
+Want help writing acceptance criteria for the mobile funnel fix?`},
+    ]
+  },
+  {
+    slug:'cs-content-creator', name:'Content Creator', domain:'Marketing',
+    icon:'✍️', color:'#EF4444',
+    chips:['Write a LinkedIn post','Email subject lines','Content calendar'],
+    seed:[
+      {r:'user',t:'I need to write a LinkedIn post about our new AI feature launch. It helps teams automate their reporting.'},
+      {r:'assistant',t:`Here's a post that leads with the pain, not the feature:
+
+---
+
+**We tracked down the #1 reason our customers worked late on Fridays.**
+
+It wasn't deadlines.
+It wasn't meetings.
+
+It was reports.
+
+Pulling numbers from 4 different tools. Formatting them into a deck no one would read until Monday anyway. Every. Single. Week.
+
+Starting today, that stops.
+
+[Product] now writes your weekly report for you — automatically, from your real data, in your voice.
+
+The first team that tested it got back 3 hours a week. Per person.
+
+If your Friday at 5pm looks more like a spreadsheet than a weekend, drop a 🙋 in the comments.
+
+---
+
+**Why this works:**
+- Opens with curiosity (not "we launched")
+- Names the specific pain (Friday reports)
+- Concrete proof point (3 hours/week)
+- CTA that invites low-friction engagement
+
+Want me to write 2 more variations with different angles?`},
+      {r:'user',t:'Yes! Give me one that leads with the ROI angle.'},
+      {r:'assistant',t:`Here's the ROI-first version:
+
+---
+
+**Quick math:**
+
+Your team: 8 people
+Weekly reporting time per person: ~2.5 hours
+Cost at $80/hr fully loaded: **$1,600/week**
+Per year: **$83,000** — gone. Just on reports.
+
+That's a full-time hire, spent on copy-paste.
+
+We built something about this. [Product] now automates weekly reporting end-to-end — pulling from your tools, writing the narrative, formatting the deck.
+
+Setup takes 20 minutes. The first report runs itself.
+
+If you want to see the 20-minute demo, link in bio 👇
+
+---
+
+**The difference from the first version:**
+- Speaks to decision-makers (budget owners see $83K immediately)
+- Creates urgency without hype ("full-time hire spent on copy-paste")
+- Specific CTA with low friction
+
+Use the **pain version** for IC audiences, the **ROI version** for managers and founders. Want a third angle — social proof / customer story?`},
+    ]
+  },
+  {
+    slug:'cs-ux-researcher', name:'UX Designer', domain:'Design',
+    icon:'🖌️', color:'#F97316',
+    chips:['Review my UI','User flow help','Design system?'],
+    seed:[
+      {r:'user',t:'Users keep dropping off at our onboarding step 3. It asks them to connect their calendar. Any ideas?'},
+      {r:'assistant',t:`Calendar connect is a **classic high-friction gate** — you're asking for trust before you've delivered value. Let me diagnose before prescribing.
+
+A few questions:
+- What value do users get *immediately after* connecting? Is it obvious before they connect?
+- Is this a required step or can they skip?
+- Do you know *where* in step 3 they drop — on the screen, or do they never reach it?
+
+**Most likely causes (in order):**
+1. **Perceived risk > perceived reward** — "What will you do with my calendar?" anxiety
+2. **Wrong moment** — asked before the aha moment, not after
+3. **Friction in the OAuth flow** — Google/Outlook permission screens are scary
+
+**Quick wins to test:**
+- Add a single line under the CTA: *"We only read events. We never write, share, or store them."*
+- Show a preview of what they'll see after connecting (screenshot or animation)
+- Make the step skippable — users who skip can be prompted again after they experience value
+
+What's the current conversion rate on that step?`},
+      {r:'user',t:'About 28%. The value is that they see their meetings auto-tagged in our dashboard.'},
+      {r:'assistant',t:`28% means 72% of users hit that wall and don't get through it — that's a significant problem worth fixing properly.
+
+**Here's what I'd do:**
+
+**Immediate (no code):**
+Show a **before/after screenshot** on the same screen — left side: blank dashboard, right side: meetings auto-tagged with categories. Make the value visceral, not described.
+
+**Low effort (1–2 days):**
+Rewrite the headline from whatever it currently says to:
+*"See your week, automatically organized"*
+And the subtext: *"Connect your calendar. We read-only — your events never leave your device."*
+
+**Medium effort (1 sprint):**
+Move the calendar connect step to **after the first aha moment**. Let them see a demo dashboard with sample data first. Once they go "oh, this is what I'd get" — *then* ask for the calendar.
+
+**My hypothesis:** moving the step post-demo alone will get you to 45–55% conversion. The reassurance copy will add another 5–8%.
+
+Want me to sketch out the revised onboarding flow?`},
+    ]
+  },
+];
+
+// ── State ────────────────────────────────────────────────────────────────
+let current = AGENTS[0];
+let msgs = [];
+let sending = false;
+const DEMO_DELAYS = [600,900,700,800,650];
+
+// ── Init ────────────────────────────────────────────────────────────────
+function init(){
+  renderSwitcher();
+  loadAgent(AGENTS[0]);
+}
+
+function renderSwitcher(){
+  const sw = document.getElementById('switcher');
+  sw.innerHTML = AGENTS.map(a =>
+    `<div class="agent-pill ${a.slug===current.slug?'active':''}"
+          onclick="loadAgent(AGENTS.find(x=>x.slug==='${a.slug}'))"
+          style="${a.slug===current.slug?`color:${a.color}`:''}">
+      ${a.icon} ${a.name}
+    </div>`
+  ).join('');
+}
+
+function loadAgent(agent){
+  current = agent;
+  msgs = [];
+  sending = false;
+
+  // header
+  const icon = document.getElementById('hd-icon');
+  icon.textContent = agent.icon;
+  icon.style.background = hex(agent.color,.12);
+
+  document.getElementById('hd-name').textContent = agent.name;
+  const dom = document.getElementById('hd-domain');
+  dom.textContent = agent.domain;
+  dom.style.color = agent.color;
+
+  document.getElementById('send-btn').style.background = agent.color;
+  document.getElementById('msg-input').placeholder = `Ask ${agent.name} anything…`;
+  document.getElementById('input-pill-el')?.setAttribute('style',`--accent:${agent.color}`);
+
+  // quick chips
+  document.getElementById('quick-chips').innerHTML = agent.chips.map(c=>
+    `<button class="attach-chip"
+       style="background:${hex(agent.color,.1)};color:${agent.color}"
+       onclick="useChip('${c.replace(/'/g,"\\'")}')">${c}</button>`
+  ).join('');
+
+  // seed conversation
+  const container = document.getElementById('messages');
+  container.innerHTML = `<div class="divider"><span>Today</span></div>`;
+
+  const times = ['9:14 AM','9:15 AM','9:17 AM','9:18 AM'];
+  agent.seed.forEach((m,i)=>{
+    msgs.push({role:m.r, content:m.t});
+    appendBubble(m.r, m.t, times[i]||'9:20 AM', false);
+  });
+
+  container.scrollTop = container.scrollHeight;
+  renderSwitcher();
+}
+
+function useChip(text){
+  document.getElementById('msg-input').value = text;
+  send();
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────
+function appendBubble(role, text, time, animate){
+  const emptyState = document.getElementById('empty-state');
+  if(emptyState) emptyState.remove();
+
+  const container = document.getElementById('messages');
+  const isUser = role==='user';
+  const color = current.color;
+
+  const wrapper = document.createElement('div');
+
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+  if(animate){ row.style.opacity='0'; row.style.transform='translateY(10px)'; row.style.transition='all .25s'; }
+
+  const av = document.createElement('div');
+  av.className = 'av';
+  av.style.background = isUser ? hex(color,.15) : hex(color,.1);
+  av.style.color = color;
+  av.textContent = isUser ? 'You' : 'AI';
+
+  const bubble = document.createElement('div');
+  bubble.className = `bubble ${role}`;
+  if(isUser){ bubble.style.background = color; bubble.textContent = text; }
+  else { bubble.innerHTML = md(text); }
+
+  row.appendChild(av);
+  row.appendChild(bubble);
+  wrapper.appendChild(row);
+
+  if(time){
+    const ts = document.createElement('div');
+    ts.className = 'ts';
+    ts.textContent = time;
+    wrapper.appendChild(ts);
+  }
+
+  container.appendChild(wrapper);
+
+  if(animate){
+    requestAnimationFrame(()=>{
+      row.style.opacity='1';
+      row.style.transform='translateY(0)';
+    });
+  }
+
+  container.scrollTop = container.scrollHeight;
+  return bubble;
+}
+
+function showTyping(){
+  const container = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row assistant';
+  row.id = 'typing-indicator';
+
+  const av = document.createElement('div');
+  av.className = 'av';
+  av.style.background = hex(current.color,.1);
+  av.style.color = current.color;
+  av.textContent = 'AI';
+
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.innerHTML = `<span style="background:${current.color}"></span><span style="background:${current.color}"></span><span style="background:${current.color}"></span>`;
+
+  row.appendChild(av);
+  row.appendChild(typing);
+  container.appendChild(row);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping(){
+  document.getElementById('typing-indicator')?.remove();
+}
+
+// ── Demo responses ────────────────────────────────────────────────────────
+const DEMO_REPLIES = {
+  'cs-senior-engineer':[
+    `Good question. My instinct is always **simplest thing that works first**.\n\nBefore writing any code:\n- Define the interface (types/schema)\n- Write the test that proves it works\n- Then implement\n\nWhat's the specific problem you're solving?`,
+    `I'd approach this with a **two-step refactor**:\n\n1. Extract the logic into a pure function (no side effects)\n2. Write tests against the function before touching the class structure\n\nThat way you have a safety net. What language/framework are you in?`,
+    `Classic trade-off. My rule of thumb:\n- **<100ms** → synchronous, keep it simple\n- **100ms–2s** → async with loading state\n- **>2s** → background job + notification\n\nWhat's the current response time you're seeing?`
+  ],
+  'cs-ceo-advisor':[
+    `**What decision does this drive?**\n\nI find founders ask about tactics when they actually face a strategic choice. Tell me the trade-off you're wrestling with and I can help you think it through properly.`,
+    `That's a hiring decision disguised as a product question. The real question is: what capability are you missing, and is this the fastest way to get it?\n\nWho specifically would own this if you build it?`,
+    `My framework for this:\n1. What's the **cost of being wrong** in each direction?\n2. Which choice is **more reversible**?\n3. What would you need to believe for option B to be right?\n\nThe answer usually surfaces in question 3.`
+  ],
+  'cs-product-manager':[
+    `Let's RICE score this before we go further.\n\n- **Reach**: users/quarter impacted\n- **Impact**: 0.25 / 0.5 / 1 / 2 / 3\n- **Confidence**: %\n- **Effort**: eng-weeks\n\nWhat are the top 3 items you're comparing?`,
+    `Good instinct. Write the **press release first** — if you can't describe the customer benefit in 2 sentences, the feature isn't defined well enough yet.\n\nWho is the primary user and what job are they trying to do?`,
+    `The metric question is the right one to start with. I'd push back on tracking too many things.\n\nOne **north star** + two **leading indicators** is the right model. What's the outcome you're trying to drive for users?`
+  ],
+  'cs-content-creator':[
+    `Here's a draft. Strong content follows this structure:\n\n**Hook** (pain or curiosity)\n**Body** (specific, not generic)\n**CTA** (low friction)\n\nWhat platform and audience are you writing for? I'll tailor the tone.`,
+    `Five subject line options:\n\n1. "The report that writes itself"\n2. "Friday 5pm, meet your new assistant"\n3. "3 hours back. Every week."\n4. "We automated the part everyone hates"\n5. "Your team spent $83K on copy-paste last year"\n\nWhich direction fits your list best?`,
+    `Content calendar for Q3 — I'd structure it around **3 content pillars**:\n\n1. **Education** (40%) — how-to, explainers, industry insight\n2. **Social proof** (35%) — customer stories, metrics, before/after\n3. **Product** (25%) — features, updates, use cases\n\nWhat's your publish cadence (posts/week)?`
+  ],
+  'cs-ux-researcher':[
+    `Before I give you design feedback — **what's the user trying to accomplish?**\n\nThe best UI critique starts with the job-to-be-done, not the layout. Walk me through the user goal and I'll evaluate the design against that.`,
+    `Classic usability issue. Run a **5-second test** first — show the screen to 5 people for 5 seconds and ask "what does this page do?" If they can't answer, the hierarchy is the problem.\n\nWhat does the screen currently look like above the fold?`,
+    `A design system makes sense when you have **3+ screens sharing repeated components**. Earlier than that, you're building infrastructure before product.\n\nHow many distinct screens does your current product have?`
+  ]
+};
+
+function getReply(){
+  const replies = DEMO_REPLIES[current.slug] || [`I'm here to help with anything in my domain. Tell me more about what you're working on and I'll give you my honest take.`];
+  return replies[Math.floor(Math.random()*replies.length)];
+}
+
+// ── Send ──────────────────────────────────────────────────────────────────
+async function send(){
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if(!text||sending) return;
+
+  sending = true;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+
+  msgs.push({role:'user', content:text});
+  appendBubble('user', text, now(), true);
+
+  const delay = DEMO_DELAYS[Math.floor(Math.random()*DEMO_DELAYS.length)];
+  await sleep(180);
+  showTyping();
+  await sleep(delay);
+  removeTyping();
+
+  const reply = getReply();
+  msgs.push({role:'assistant', content:reply});
+  appendBubble('assistant', reply, now(), true);
+
+  sending = false;
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+// ── Utils ──────────────────────────────────────────────────────────────────
+function hex(h, a){
+  const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function now(){
+  const d=new Date();
+  return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,90)+'px';
+}
+function handleKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); }
+}
+
+// ── Markdown ──────────────────────────────────────────────────────────────
+function md(t){
+  return t
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
+    .replace(/`([^`\n]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g,'<em>$1</em>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/^(?!<[a-z])/gm,'<p>').replace(/$(?!>)/gm,'</p>')
+    .replace(/<p><\/p>/g,'')
+    .replace(/<p>(<pre|<ul|<h)/g,'$1')
+    .replace(/(pre>|ul>|h3>)<\/p>/g,'$1');
+}
+
+init();
+</script>
+</body>
+</html>
