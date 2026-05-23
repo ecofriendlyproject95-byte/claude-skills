@@ -37,18 +37,14 @@ class ApiService {
     final client = http.Client();
     try {
       final response = await client.send(request);
-
-      await for (final chunk
-          in response.stream.transform(utf8.decoder)) {
+      await for (final chunk in response.stream.transform(utf8.decoder)) {
         for (final line in chunk.split('\n')) {
           if (line.startsWith('data: ')) {
             final data = line.substring(6).trim();
             if (data == '[DONE]') return;
             try {
               final parsed = jsonDecode(data) as Map<String, dynamic>;
-              if (parsed['text'] != null) {
-                yield parsed['text'] as String;
-              }
+              if (parsed['text'] != null) yield parsed['text'] as String;
             } catch (_) {}
           }
         }

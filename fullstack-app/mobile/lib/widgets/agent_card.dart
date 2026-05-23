@@ -15,10 +15,7 @@ class AgentCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: agent.color.withOpacity(0.2),
-            width: 1.5,
-          ),
+          border: Border.all(color: agent.color.withOpacity(0.2), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: agent.color.withOpacity(0.08),
@@ -34,70 +31,42 @@ class AgentCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 44, height: 44,
                   decoration: BoxDecoration(
                     color: agent.color.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Center(
-                    child: Text(
-                      agent.icon,
-                      style: const TextStyle(fontSize: 22),
-                    ),
-                  ),
+                  child: Center(child: Text(agent.icon, style: const TextStyle(fontSize: 22))),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        agent.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w700),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      Text(agent.name,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
                       const SizedBox(height: 2),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: agent.color.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Text(
-                          agent.domain,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: agent.color,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: Text(agent.domain,
+                          style: TextStyle(fontSize: 11, color: agent.color, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: Colors.grey.shade400,
-                ),
+                Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade400),
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              agent.description,
+            Text(agent.description,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
-                    height: 1.4,
-                  ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
+                color: Colors.grey.shade600, height: 1.4),
+              maxLines: 2, overflow: TextOverflow.ellipsis),
           ],
         ),
       ),
