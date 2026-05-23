@@ -6,85 +6,24 @@
 <title>AI Agents — Chat Preview</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f5f6ff; --surface:#fff; --border:#eaebf5;
-  --text:#1a1c2e; --muted:#8b90a7;
-}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  background:linear-gradient(135deg,#667eea,#764ba2);
-  min-height:100vh;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-start;
-  padding:24px 16px 48px;gap:20px;
-}
-
-/* ── API key bar ── */
-.api-bar{
-  width:390px;background:rgba(255,255,255,0.15);
-  border-radius:16px;padding:14px 16px;
-  backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);
-}
+:root{--bg:#f5f6ff;--surface:#fff;--border:#eaebf5;--text:#1a1c2e;--muted:#8b90a7;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px 16px 48px;gap:20px;}
+.api-bar{width:390px;background:rgba(255,255,255,0.15);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);}
 .api-bar-title{color:#fff;font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-.api-bar-title .badge{
-  font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;
-}
-.badge-demo{background:#f59e0b;color:#fff;}
-.badge-live{background:#10b981;color:#fff;}
+.badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;}
+.badge-demo{background:#f59e0b;color:#fff;}.badge-live{background:#10b981;color:#fff;}
 .api-row{display:flex;gap:8px;}
-.api-input{
-  flex:1;padding:8px 12px;border-radius:10px;border:none;
-  font-size:13px;outline:none;background:rgba(255,255,255,0.95);
-  color:#1a1c2e;
-}
-.api-input::placeholder{color:#aaa;}
-.api-btn{
-  padding:8px 14px;border-radius:10px;border:none;
-  font-size:12px;font-weight:700;cursor:pointer;
-  background:#fff;color:#6366f1;white-space:nowrap;
-}
-.api-btn:hover{background:#f0f0ff;}
+.api-input{flex:1;padding:8px 12px;border-radius:10px;border:none;font-size:13px;outline:none;background:rgba(255,255,255,0.95);color:#1a1c2e;}
+.api-btn{padding:8px 14px;border-radius:10px;border:none;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#6366f1;}
 .api-hint{color:rgba(255,255,255,0.7);font-size:11px;margin-top:6px;line-height:1.4;}
-.api-hint a{color:#fff;}
-
-/* ── Agent switcher ── */
 .agent-switcher{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:390px;}
-.agent-pill{
-  padding:7px 14px;border-radius:24px;font-size:12px;font-weight:700;
-  cursor:pointer;border:2px solid rgba(255,255,255,0.3);
-  background:rgba(255,255,255,0.15);color:#fff;
-  transition:all .2s;display:flex;align-items:center;gap:5px;
-}
-.agent-pill:hover{background:rgba(255,255,255,0.28);}
+.agent-pill{padding:7px 14px;border-radius:24px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;transition:all .2s;display:flex;align-items:center;gap:5px;}
 .agent-pill.active{background:#fff;border-color:#fff;}
-
-/* ── Phone ── */
-.phone{
-  width:390px;height:780px;background:var(--bg);
-  border-radius:48px;overflow:hidden;display:flex;flex-direction:column;
-  box-shadow:0 0 0 11px #1a1a2e,0 0 0 13px #2e2e50,0 40px 80px rgba(0,0,0,.5);
-  position:relative;
-}
-.notch{
-  width:120px;height:32px;background:#1a1a2e;
-  border-radius:0 0 20px 20px;
-  position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10;
-}
-.status-bar{
-  background:var(--bg);padding:15px 26px 6px;
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:11px;font-weight:700;color:var(--text);flex-shrink:0;
-}
-.si{display:flex;gap:4px;font-size:10px;}
-
-/* chat layout */
+.phone{width:390px;height:780px;background:var(--bg);border-radius:48px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 11px #1a1a2e,0 0 0 13px #2e2e50,0 40px 80px rgba(0,0,0,.5);position:relative;}
+.notch{width:120px;height:32px;background:#1a1a2e;border-radius:0 0 20px 20px;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10;}
+.status-bar{background:var(--bg);padding:15px 26px 6px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:var(--text);flex-shrink:0;}
 .chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-
-.chat-header{
-  padding:10px 14px 11px;display:flex;align-items:center;gap:9px;
-  background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.back-btn{background:none;border:none;cursor:pointer;font-size:22px;color:var(--text);padding:0 4px 0 0;line-height:1;}
+.chat-header{padding:10px 14px 11px;display:flex;align-items:center;gap:9px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
 .hd-av{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
 .hd-name{font-size:14px;font-weight:800;color:var(--text);}
 .hd-dom{font-size:11px;font-weight:600;margin-top:1px;}
@@ -92,150 +31,58 @@ body{
 .live-dot{width:7px;height:7px;border-radius:50%;background:#10b981;}
 .live-lbl{font-size:10px;font-weight:700;color:#10b981;}
 .mode-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;}
-
-/* chips */
-.chips-row{
-  display:flex;gap:7px;padding:8px 14px;
-  overflow-x:auto;scrollbar-width:none;flex-shrink:0;background:var(--bg);
-}
+.chips-row{display:flex;gap:7px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;background:var(--bg);}
 .chips-row::-webkit-scrollbar{display:none;}
-.chip{
-  padding:5px 12px;border-radius:18px;font-size:11px;font-weight:700;
-  white-space:nowrap;cursor:pointer;border:none;transition:opacity .2s;
-}
-.chip:hover{opacity:.75;}
-
-/* messages */
-.messages{
-  flex:1;overflow-y:auto;padding:12px 14px 6px;
-  display:flex;flex-direction:column;gap:8px;
-  scrollbar-width:none;
-}
+.chip{padding:5px 12px;border-radius:18px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;border:none;transition:opacity .2s;}
+.messages{flex:1;overflow-y:auto;padding:12px 14px 6px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;}
 .messages::-webkit-scrollbar{display:none;}
 .divider{display:flex;align-items:center;gap:8px;margin:2px 0;}
 .divider span{font-size:10px;font-weight:700;color:var(--muted);white-space:nowrap;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-
 .msg-row{display:flex;align-items:flex-end;gap:7px;}
 .msg-row.user{flex-direction:row-reverse;}
 .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
 .bubble{max-width:74%;padding:9px 13px;font-size:13px;line-height:1.55;}
-.bubble.assistant{
-  background:var(--surface);color:var(--text);
-  border:1px solid var(--border);
-  border-radius:16px 16px 16px 3px;
-  box-shadow:0 2px 6px rgba(0,0,0,.04);
-}
+.bubble.assistant{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:16px 16px 16px 3px;}
 .bubble.user{color:#fff;border-radius:16px 16px 3px 16px;}
-.bubble strong{font-weight:700;}
-.bubble em{font-style:italic;}
-.bubble code{
-  background:rgba(0,0,0,.07);padding:1px 5px;
-  border-radius:4px;font-size:11px;font-family:'Courier New',monospace;
-}
-.bubble pre{
-  background:rgba(0,0,0,.06);border-radius:9px;
-  padding:9px 11px;margin:6px 0;font-size:11px;overflow-x:auto;line-height:1.5;
-}
-.bubble ul,.bubble ol{padding-left:15px;margin:3px 0;}
-.bubble li{margin-bottom:3px;}
-.bubble p{margin-bottom:4px;}
-.bubble p:last-child{margin-bottom:0;}
-.bubble h3{font-size:12px;font-weight:700;margin:7px 0 3px;}
+.bubble strong{font-weight:700;}.bubble code{background:rgba(0,0,0,.07);padding:1px 5px;border-radius:4px;font-size:11px;}
+.bubble pre{background:rgba(0,0,0,.06);border-radius:9px;padding:9px 11px;margin:6px 0;font-size:11px;}
+.bubble ul,.bubble ol{padding-left:15px;margin:3px 0;}.bubble li{margin-bottom:3px;}.bubble p{margin-bottom:4px;}.bubble p:last-child{margin-bottom:0;}
 .ts{font-size:9px;color:var(--muted);margin-top:2px;}
-.ts.user{text-align:right;}
-.ts.assistant{padding-left:33px;}
-
-/* typing */
+.ts.user{text-align:right;}.ts.assistant{padding-left:33px;}
 .typing-row{display:flex;align-items:flex-end;gap:7px;}
-.typing{
-  display:flex;gap:4px;padding:10px 13px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:16px 16px 16px 3px;align-items:center;
-}
-.typing span{
-  width:6px;height:6px;border-radius:50%;
-  animation:blink 1.2s infinite;
-}
-.typing span:nth-child(2){animation-delay:.2s;}
-.typing span:nth-child(3){animation-delay:.4s;}
+.typing{display:flex;gap:4px;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:16px 16px 16px 3px;align-items:center;}
+.typing span{width:6px;height:6px;border-radius:50%;animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}.typing span:nth-child(3){animation-delay:.4s;}
 @keyframes blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
-
-/* input */
-.input-bar{
-  padding:8px 12px 22px;background:var(--surface);
-  border-top:1px solid var(--border);
-  display:flex;align-items:flex-end;gap:8px;flex-shrink:0;
-}
-.input-pill{
-  flex:1;background:#f2f3fa;border-radius:22px;
-  padding:9px 14px;border:1.5px solid transparent;
-  transition:border-color .2s,background .2s;
-}
+.input-bar{padding:8px 12px 22px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:flex-end;gap:8px;flex-shrink:0;}
+.input-pill{flex:1;background:#f2f3fa;border-radius:22px;padding:9px 14px;border:1.5px solid transparent;transition:border-color .2s,background .2s;}
 .input-pill:focus-within{background:#fff;}
-.input-pill textarea{
-  width:100%;border:none;background:transparent;
-  font-family:inherit;font-size:13px;color:var(--text);
-  resize:none;outline:none;max-height:80px;line-height:1.5;
-}
+.input-pill textarea{width:100%;border:none;background:transparent;font-family:inherit;font-size:13px;color:var(--text);resize:none;outline:none;max-height:80px;line-height:1.5;}
 .input-pill textarea::placeholder{color:var(--muted);}
-.send{
-  width:42px;height:42px;border-radius:50%;border:none;
-  color:#fff;font-size:17px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:transform .15s,box-shadow .15s;flex-shrink:0;
-}
-.send:hover{transform:scale(1.08);}
-.send:active{transform:scale(.93);}
-.send:disabled{background:#ccc!important;cursor:not-allowed;transform:none;}
-
-/* error toast */
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:#ef4444;color:#fff;padding:10px 20px;border-radius:12px;
-  font-size:13px;font-weight:600;z-index:999;
-  animation:fadeup .3s ease;pointer-events:none;
-}
-@keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.send{width:42px;height:42px;border-radius:50%;border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;flex-shrink:0;}
+.send:disabled{background:#ccc!important;cursor:not-allowed;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;pointer-events:none;}
 </style>
 </head>
 <body>
-
-<!-- API Key bar -->
 <div class="api-bar">
-  <div class="api-bar-title">
-    🔑 Anthropic API Key
-    <span class="badge badge-demo" id="mode-badge">DEMO MODE</span>
-  </div>
+  <div class="api-bar-title">🔑 Anthropic API Key <span class="badge badge-demo" id="mode-badge">DEMO MODE</span></div>
   <div class="api-row">
-    <input class="api-input" type="password" id="api-key-input"
-      placeholder="sk-ant-api03-…  (paste your key for real Claude responses)"/>
+    <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-api03-…  (paste your key for real Claude responses)"/>
     <button class="api-btn" onclick="setKey()">Connect</button>
   </div>
-  <div class="api-hint">
-    No key? <strong>Demo mode still works</strong> — every agent gives varied responses so you can test the UI.
-    Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
-  </div>
+  <div class="api-hint">No key? <strong>Demo mode still works</strong> — every agent gives varied, keyword-aware responses.</div>
 </div>
-
-<!-- Agent switcher -->
 <div class="agent-switcher" id="switcher"></div>
-
-<!-- Phone -->
 <div class="phone">
   <div class="notch"></div>
-  <div class="status-bar">
-    <span>9:41</span>
-    <div class="si"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
-  </div>
+  <div class="status-bar"><span>9:41</span><div style="display:flex;gap:4px"><span>●●●</span><span>WiFi</span><span>🔋</span></div></div>
   <div class="chat-wrap">
     <div class="chat-header">
-      <button class="back-btn">‹</button>
+      <button style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text)">‹</button>
       <div class="hd-av" id="hd-icon"></div>
-      <div>
-        <div class="hd-name" id="hd-name"></div>
-        <div class="hd-dom" id="hd-dom"></div>
-      </div>
+      <div><div class="hd-name" id="hd-name"></div><div class="hd-dom" id="hd-dom"></div></div>
       <div class="hd-right">
         <div class="live-dot" id="live-dot"></div>
         <span class="live-lbl" id="live-lbl">Demo</span>
@@ -246,381 +93,47 @@ body{
     <div class="messages" id="messages"></div>
     <div class="input-bar">
       <div class="input-pill" id="ip">
-        <textarea id="msg-input" rows="1"
-          oninput="autoResize(this)"
-          onkeydown="handleKey(event)"
-          placeholder="Type your message…"></textarea>
+        <textarea id="msg-input" rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)" placeholder="Type your message…"></textarea>
       </div>
       <button class="send" id="send-btn" onclick="send()">➤</button>
     </div>
   </div>
 </div>
-
 <script>
-// ── Agents ──────────────────────────────────────────────────────────────
-const AGENTS = [
-  {
-    slug:'cs-senior-engineer', name:'Senior Engineer', domain:'Engineering', icon:'⚙️', color:'#3B82F6',
-    chips:['Review my code','Design an API','Spot the bug','Best practices?','Refactor advice'],
-    prompt:`You are a Senior Software Engineer with 10+ years of experience. You follow the Karpathy-coder discipline: surface assumptions upfront, prefer surgical minimal changes, recommend the simplest solution, flag security issues immediately. You are direct and technical. Keep responses concise and use markdown formatting.`,
-  },
-  {
-    slug:'cs-ceo-advisor', name:'CEO Advisor', domain:'C-Level', icon:'👔', color:'#1D4ED8',
-    chips:['Fundraising strategy','Should I hire or promote?','Board management','Pricing decision','Cofounder conflict'],
-    prompt:`You are a CEO Advisor who has advised 50+ founders from seed to Series C. You ask "what decision does this drive?" before giving advice. You distinguish urgent from important. Keep responses concise and use markdown. Be direct and opinionated.`,
-  },
-  {
-    slug:'cs-product-manager', name:'Product Manager', domain:'Product', icon:'🗺️', color:'#059669',
-    chips:['Write a PRD','Prioritize my roadmap','Define success metrics','User story help','Feature scoping'],
-    prompt:`You are a Senior Product Manager who has shipped B2B and B2C products. You start with the customer problem, not the solution. You write crisp PRDs. Be direct, use markdown, keep responses focused and actionable.`,
-  },
-  {
-    slug:'cs-content-creator', name:'Content Creator', domain:'Marketing', icon:'✍️', color:'#EF4444',
-    chips:['Write a LinkedIn post','Email subject lines','Landing page copy','Twitter thread','Blog post intro'],
-    prompt:`You are a Content Creator and Copywriter who builds audiences. You write for humans first. You make complex ideas simple. Provide actual copy, not just advice. Use markdown formatting.`,
-  },
-  {
-    slug:'cs-ux-researcher', name:'UX Designer', domain:'Design', icon:'🖌️', color:'#F97316',
-    chips:['Review my onboarding','Fix low conversion','User flow advice','Design system?','Usability issue'],
-    prompt:`You are a UX Researcher and Product Designer. You base recommendations on user behavior, not assumptions. You use Nielsen's heuristics. Be direct, practical, and use markdown formatting.`,
-  },
-  {
-    slug:'startup-cto', name:'Startup CTO', domain:'Personas', icon:'💡', color:'#0EA5E9',
-    chips:['Build vs buy?','What stack to use?','Hire first engineer?','Tech debt decisions','Scaling advice'],
-    prompt:`You are a Startup CTO who has scaled teams from 0 to 50 engineers. You are direct, resourceful, and opinionated about pragmatic stack choices. You have made expensive mistakes and learned from them. Use markdown formatting.`,
-  },
+const AGENTS=[
+  {slug:'cs-senior-engineer',name:'Senior Engineer',domain:'Engineering',icon:'⚙️',color:'#3B82F6',chips:['Review my code','Design an API','Spot the bug','Best practices?','Refactor advice'],prompt:`You are a Senior Software Engineer with 10+ years of experience. Surface assumptions upfront, prefer surgical minimal changes, recommend the simplest solution, flag security issues immediately. Be direct and technical. Use markdown formatting.`},
+  {slug:'cs-ceo-advisor',name:'CEO Advisor',domain:'C-Level',icon:'👔',color:'#1D4ED8',chips:['Fundraising strategy','Should I hire or promote?','Board management','Pricing decision','Cofounder conflict'],prompt:`You are a CEO Advisor who has advised 50+ founders from seed to Series C. Ask "what decision does this drive?" before giving advice. Distinguish urgent from important. Be direct and opinionated. Use markdown.`},
+  {slug:'cs-product-manager',name:'Product Manager',domain:'Product',icon:'🗺️',color:'#059669',chips:['Write a PRD','Prioritize my roadmap','Define success metrics','User story help','Feature scoping'],prompt:`You are a Senior Product Manager who has shipped B2B and B2C products. Start with the customer problem, not the solution. Write crisp PRDs. Be direct, use markdown, keep responses focused and actionable.`},
+  {slug:'cs-content-creator',name:'Content Creator',domain:'Marketing',icon:'✍️',color:'#EF4444',chips:['Write a LinkedIn post','Email subject lines','Landing page copy','Twitter thread','Blog post intro'],prompt:`You are a Content Creator and Copywriter who builds audiences. Write for humans first. Make complex ideas simple. Provide actual copy, not just advice. Use markdown formatting.`},
+  {slug:'cs-ux-researcher',name:'UX Designer',domain:'Design',icon:'🖌️',color:'#F97316',chips:['Review my onboarding','Fix low conversion','User flow advice','Design system?','Usability issue'],prompt:`You are a UX Researcher and Product Designer. Base recommendations on user behavior, not assumptions. Use Nielsen's heuristics. Be direct, practical, use markdown.`},
+  {slug:'startup-cto',name:'Startup CTO',domain:'Personas',icon:'💡',color:'#0EA5E9',chips:['Build vs buy?','What stack to use?','Hire first engineer?','Tech debt decisions','Scaling advice'],prompt:`You are a Startup CTO who has scaled teams from 0 to 50 engineers. Direct, resourceful, opinionated about pragmatic stack choices. Use markdown formatting.`},
 ];
-
-// ── Demo responses — varied by agent + message content ──────────────────
-// Each function receives the user message and returns a relevant response
-const DEMO = {
-  'cs-senior-engineer': (msg) => {
-    const m = msg.toLowerCase();
-    if(m.includes('api') || m.includes('rest') || m.includes('graphql'))
-      return `**REST vs GraphQL — my take:**\n\nFor a mobile app with 2+ clients, I'd pick **REST first** with a few composite endpoints.\n\n- GraphQL shines when clients need radically different data shapes\n- REST is simpler to cache, monitor, and debug\n- You can always add GraphQL to specific high-traffic routes later\n\n**Start with these endpoints:**\n\`\`\`\nGET  /feed          ← cursor-paginated\nGET  /items/:id     ← full detail + relations\nPOST /items         ← create\nPATCH /items/:id    ← partial update\n\`\`\`\n\nWhat does your data model look like?`;
-    if(m.includes('bug') || m.includes('error') || m.includes('fix'))
-      return `Before I can help debug — I need three things:\n\n1. **The exact error message** (full stack trace)\n2. **The code block where it fails**\n3. **What you expected vs what happened**\n\nThe fastest way to find bugs: add a log right before the failure and narrow it down from there. What are you seeing?`;
-    if(m.includes('refactor') || m.includes('clean') || m.includes('rewrite'))
-      return `**Refactor rule #1:** Never refactor without tests.\n\nMy approach:\n1. Write characterization tests against the current behavior (even ugly behavior)\n2. Refactor in small steps, running tests after each\n3. Only extract abstractions when you see the same pattern **3+ times**\n\n> "Make it work → make it right → make it fast"\n\nWhat's the code you want to refactor? Paste it and I'll give you a specific plan.`;
-    if(m.includes('performance') || m.includes('slow') || m.includes('optim'))
-      return `**Don't optimize before you measure.**\n\nStep 1: Profile first\n- Frontend: Chrome DevTools → Performance tab\n- Backend: Add timing logs around the suspected bottleneck\n- DB: \`EXPLAIN ANALYZE\` on slow queries\n\nCommon culprits I find 80% of the time:\n- **N+1 queries** (fix with eager loading)\n- **Missing indexes** on foreign keys\n- **Uncompressed assets** / no CDN\n\nWhat specifically is slow — page load, API response, or a specific operation?`;
-    if(m.includes('review') || m.includes('code'))
-      return `Happy to review. Paste the code and tell me:\n\n1. **What it does** (1 sentence)\n2. **What you're worried about** (security? performance? readability?)\n3. **Language + framework**\n\nI'll focus on the areas that matter most.`;
-    return `Good question. My instinct: **start with the simplest thing that works, then measure before optimizing**.\n\nBefore writing code, define:\n- What does "done" look like? (acceptance criteria)\n- What's the expected load / scale?\n- What breaks if this fails?\n\nWhat are you building specifically?`;
-  },
-
-  'cs-ceo-advisor': (msg) => {
-    const m = msg.toLowerCase();
-    if(m.includes('raise') || m.includes('fund') || m.includes('investor') || m.includes('seed') || m.includes('series'))
-      return `**First question: what does the capital unlock that growth can't?**\n\nRaise when you can answer that clearly. Vague "to grow faster" is a weak narrative.\n\nThe fundraising checklist I use:\n- ✅ 3 months of clean MRR data (churn broken out separately)\n- ✅ A "why now" story — market timing, not just traction\n- ✅ 20 warm intros lined up before you start the process\n- ✅ Churn trending down, not up\n\nWhat's your current MRR and monthly growth rate?`;
-    if(m.includes('hire') || m.includes('team') || m.includes('first employee'))
-      return `**Don't hire to fill a role. Hire to remove a specific bottleneck.**\n\nAsk yourself: what is the one thing that, if delegated, would multiply your output the most?\n\nFor most early-stage CEOs it's:\n1. **First hire = your weakest skill** (if you're technical, hire commercial first)\n2. **Never hire ahead of revenue** — hire when the role is already creating constraint\n3. **Promote internal before hiring external** for manager roles\n\nWhat role are you considering and what problem does it solve?`;
-    if(m.includes('churn') || m.includes('retention') || m.includes('customer'))
-      return `**Churn is a product problem disguised as a sales problem.**\n\nBefore you do anything else, do 10 churned customer interviews this week. Ask:\n- "What made you sign up?"\n- "What made you leave?"\n- "What would have made you stay?"\n\nThe pattern that emerges tells you exactly what to fix. Don't invest in retention tactics until you know the root cause.\n\nWhat's your current monthly churn rate?`;
-    if(m.includes('compet') || m.includes('market') || m.includes('position'))
-      return `**Positioning is a decision, not a description.**\n\nThe 3 questions I ask:\n1. Who is the customer that suffers most without you?\n2. What alternatives do they use today?\n3. Why are you meaningfully different (not just "better")?\n\nMost founders position against features. Win by positioning against the job-to-be-done.\n\nWho is your most profitable customer segment right now?`;
-    return `**What decision does this drive?**\n\nTell me the specific trade-off you're facing and what happens if you get it wrong. That's where I can add the most value. Generic advice is cheap — let's get to the real question.`;
-  },
-
-  'cs-product-manager': (msg) => {
-    const m = msg.toLowerCase();
-    if(m.includes('prd') || m.includes('spec') || m.includes('document'))
-      return `**PRD structure I use for every feature:**\n\n**Problem statement** — what customer pain, with evidence (quotes, data)\n**Success metrics** — how will you know it worked? (primary + guardrail)\n**Non-goals** — what you're explicitly NOT building\n**User stories** — in "as a [user], I want [action] so that [outcome]" format\n**Edge cases** — the top 3-5 ways this breaks\n**Open questions** — decisions you need from stakeholders\n\nWhat feature are you writing the PRD for? I'll draft the problem statement with you.`;
-    if(m.includes('priorit') || m.includes('roadmap') || m.includes('backlog'))
-      return `**RICE score everything before the conversation:**\n\n| Feature | Reach | Impact | Confidence | Effort | Score |\n|---|---|---|---|---|---|\n| Feature A | 500 | 2 | 80% | 3 | 267 |\n| Feature B | 200 | 3 | 60% | 1 | 360 |\n\nScore = (Reach × Impact × Confidence) / Effort\n\n**My rule:** Never walk into a prioritization meeting without pre-calculated scores. It shifts debate from opinions to assumptions — much more productive.\n\nList your top 5 candidates and let's score them.`;
-    if(m.includes('metric') || m.includes('kpi') || m.includes('measure') || m.includes('success'))
-      return `**One north star. Two leading indicators. That's it.**\n\nMore metrics = nobody owns anything.\n\nExamples by product type:\n- **SaaS:** North star = weekly active paying accounts. Leading = activation rate + feature adoption\n- **Marketplace:** North star = GMV. Leading = supply density + buyer repeat rate\n- **Consumer:** North star = DAU/MAU. Leading = D1 retention + session depth\n\nWhat outcome are you trying to drive for your users? I'll help you pick the right metric.`;
-    if(m.includes('user stor') || m.includes('acceptance') || m.includes('ticket'))
-      return `Good user story template:\n\n\`\`\`\nAs a [specific user type]\nI want to [perform action]\nSo that [achieve outcome]\n\nAcceptance criteria:\n- Given [context], when [action], then [result]\n- Given [context], when [edge case], then [safe fallback]\n\`\`\`\n\nThe mistake I see most: user stories written from the system's perspective ("The system shall…") instead of the user's. What feature are you writing stories for?`;
-    return `**Start with the customer problem, not the solution.**\n\nBefore we talk about what to build:\n1. Who specifically has this problem?\n2. How do they solve it today?\n3. What's the cost of not having a better solution?\n\nOnce we're clear on the problem, the product decisions get much easier. What's the problem you're trying to solve?`;
-  },
-
-  'cs-content-creator': (msg) => {
-    const m = msg.toLowerCase();
-    if(m.includes('linkedin') || m.includes('post') || m.includes('social'))
-      return `Here's a LinkedIn post framework that consistently gets 3-5× more engagement:\n\n**Hook** (line 1 — make them stop scrolling)\n**Gap** (create curiosity or tension)\n**Insight** (the thing they didn't know)\n**Proof** (specific number or story)\n**CTA** (low-friction ask)\n\n---\n\n**Example draft for a SaaS product:**\n\nWe almost killed our best feature.\n\nUsers weren't using it. NPS was fine. We assumed it wasn't working.\n\nThen we talked to the 8% who used it every week.\n\nThey were 4× more likely to renew. And they told every colleague.\n\nThe lesson: measure retention by segment, not average.\n\n---\n\nWhat's your product/topic? I'll write a custom version.`;
-    if(m.includes('email') || m.includes('subject') || m.includes('newsletter'))
-      return `**5 subject line formulas that work:**\n\n1. **The specific number:** "3 hours back. Every week."\n2. **The curiosity gap:** "The report that writes itself"\n3. **The direct benefit:** "Stop losing leads to slow follow-up"\n4. **The call-out:** "For founders who hate writing reports"\n5. **The counter-intuitive:** "Why your best feature is invisible"\n\n**Rules:**\n- Under 50 characters for mobile\n- No exclamation marks (spam filter + looks desperate)\n- Test subject lines at 10% of list before full send\n\nWhat's the email about? I'll write 5 options tailored to your audience.`;
-    if(m.includes('blog') || m.includes('article') || m.includes('seo') || m.includes('content'))
-      return `**Blog post structure that ranks AND converts:**\n\n1. **Hook** — open with the pain or a surprising stat\n2. **Promise** — tell them exactly what they'll learn\n3. **Body** — 3-5 sections, each answering one question\n4. **Proof** — example, case study, or screenshot per section\n5. **CTA** — one clear next step\n\n**For SEO:** Answer the search intent in the first 100 words. Google rewards articles that answer the query before scrolling.\n\nWhat topic and target audience? I'll outline the full post.`;
-    if(m.includes('copy') || m.includes('landing') || m.includes('headline') || m.includes('tagline'))
-      return `**Landing page headline formula:**\n\n\`[Specific outcome] for [specific person] without [biggest friction]\`\n\nExamples:\n- "Weekly reports for ops teams — written automatically, zero manual work"\n- "Close enterprise deals 30% faster — without changing your CRM"\n\n**Above the fold checklist:**\n- ✅ Clear headline (what it does)\n- ✅ Sub-headline (who it's for + key benefit)\n- ✅ Social proof (logo strip or quote)\n- ✅ Single CTA (not 3 buttons)\n\nPaste your current headline and I'll rewrite it.`;
-    return `Tell me:\n1. **What you're promoting** (product, idea, yourself?)\n2. **Who reads it** (job title + biggest frustration)\n3. **What action you want them to take**\n\nWith those three things I can write copy that actually converts — not just sounds good.`;
-  },
-
-  'cs-ux-researcher': (msg) => {
-    const m = msg.toLowerCase();
-    if(m.includes('onboard') || m.includes('signup') || m.includes('conversion') || m.includes('drop'))
-      return `**Onboarding drop-off diagnosis — my 3-step process:**\n\n**Step 1: Find where they leave**\nFunnel each step in your analytics. The biggest single-step drop is your fix.\n\n**Step 2: Watch 5 session recordings**\nLook for: rage clicks, hesitation before form fields, scrolling back up.\n\n**Step 3: Run a 5-user test**\nGive them the task with no instructions and watch silently. Don't explain anything.\n\n**Most common root causes I find:**\n- Asking for commitment (credit card, calendar) before delivering value\n- Too many fields in one step (3-field rule: never more than 3 per screen)\n- "Aha moment" is too far down the funnel\n\nWhat step has the biggest drop-off and what does the screen currently look like?`;
-    if(m.includes('design') || m.includes('ui') || m.includes('interface') || m.includes('layout'))
-      return `**Heuristic review checklist (Nielsen's 10):**\n\n1. **Visibility of status** — does the user always know what's happening?\n2. **Match real world** — does language match what users already know?\n3. **User control** — can they easily undo/redo?\n4. **Consistency** — same action always looks/behaves the same?\n5. **Error prevention** — are dangerous actions behind a confirm?\n\nI can't review without seeing the design, but here's what I'd look for in a mobile app:\n- Primary action visible without scrolling\n- Touch targets ≥ 44px\n- No more than 1 primary CTA per screen\n\nDescribe the screen or paste a screenshot link and I'll give specific feedback.`;
-    if(m.includes('research') || m.includes('interview') || m.includes('user test'))
-      return `**5-question user interview template:**\n\n1. "Walk me through the last time you had to [problem your product solves]"\n2. "What did you do? What tools did you use?"\n3. "What was the hardest part of that process?"\n4. "If you could wave a magic wand and change one thing…"\n5. "Who else deals with this problem on your team?"\n\n**Rules:**\n- Never ask "would you use this?" (they lie)\n- Never show the product first (anchors their thinking)\n- Ask about past behavior, not future intentions\n\nHow many interviews are you planning and what's your recruitment plan?`;
-    if(m.includes('flow') || m.includes('journey') || m.includes('navigation'))
-      return `**User flow design principles:**\n\n- Every screen should have **one primary action** — if there are two, one is wrong\n- Never put the user in a dead end — always give a next step\n- Progressive disclosure: show what's needed now, hide the rest\n\n**Flow audit questions:**\n1. How many taps to the core value? (target: ≤3)\n2. Can a user recover from every error state?\n3. Is there a clear "you did it" moment after key actions?\n\nWhat flow are you designing? I'll map it out with you.`;
-    return `**Start with the job, not the interface.**\n\nBefore critiquing any design:\n- What is the user trying to accomplish? (one sentence)\n- What's their emotional state when they arrive? (rushed? confused? motivated?)\n- What does success look like for them?\n\nDesign that answers those three questions well almost always tests well. What are you working on?`;
-  },
-
-  'startup-cto': (msg) => {
-    const m = msg.toLowerCase();
-    if(m.includes('build') || m.includes('buy') || m.includes('vendor') || m.includes('tool'))
-      return `**My build vs buy framework:**\n\n**Buy when:**\n- It's not a core competency\n- Time-to-market matters more than customization\n- The vendor's roadmap is aligned with yours\n- Total cost of ownership (TCO) is lower over 3 years\n\n**Build when:**\n- It's a direct source of competitive advantage\n- You need deep integration that vendors can't provide\n- You have the team to maintain it\n\n**The trap:** Building auth, payments, or email from scratch. Always buy these. Every. Time.\n\nWhat specifically are you evaluating? I'll give you a direct answer.`;
-    if(m.includes('stack') || m.includes('technology') || m.includes('framework') || m.includes('language'))
-      return `**My pragmatic stack recommendation for most startups:**\n\n- **Backend:** Node.js (NestJS) or Python (FastAPI) — hire from a large pool\n- **Frontend:** Next.js — SSR + routing + deployment solved\n- **Mobile:** Flutter — single codebase, near-native performance\n- **Database:** PostgreSQL — boring is good, it scales further than you think\n- **Infrastructure:** Vercel (frontend) + Railway/Render (backend) — zero DevOps until Series A\n\n**What to avoid early:** Microservices, Kubernetes, custom auth, custom payments.\n\nWhat are you building? I'll give you a specific recommendation.`;
-    if(m.includes('hire') || m.includes('engineer') || m.includes('team') || m.includes('first'))
-      return `**Your first 3 engineering hires — in order:**\n\n1. **Senior fullstack generalist** — can own features end-to-end, doesn't need hand-holding\n2. **Second generalist** — now you can work in parallel tracks\n3. **First specialist** — hire for your biggest gap (frontend, data, infra)\n\n**Red flags in interviews:**\n- Can't explain a system they built simply\n- Wants to rewrite everything before shipping anything\n- Never mentions trade-offs, only "best practices"\n\n**The number 1 mistake:** hiring fast and skipping the take-home. A 3-hour paid assignment filters out 70% of the problems.\n\nWhat stage are you at and what's the gap you're trying to fill?`;
-    if(m.includes('scale') || m.includes('performance') || m.includes('traffic') || m.includes('load'))
-      return `**Scaling sequence (in order — don't skip steps):**\n\n1. **Profile first** — you're almost certainly wrong about where the bottleneck is\n2. **Add indexes** to your DB (biggest ROI, 1 hour of work)\n3. **Add a cache layer** (Redis) for repeated reads\n4. **Optimize your slowest queries** with EXPLAIN ANALYZE\n5. **Horizontal scale** only after the above are exhausted\n\n> Most startups that "need to scale" actually need to fix 2-3 slow queries.\n\nWhat's your current bottleneck — DB, API, or something else?`;
-    return `**What's the actual constraint right now?**\n\nMost technical decisions are really trade-offs between: speed of delivery, team bandwidth, and future flexibility.\n\nTell me what you're trying to ship and by when. I'll give you the fastest path that doesn't create a debt hangover in 6 months.`;
-  },
+const DEMO={
+  'cs-senior-engineer':(msg)=>{const m=msg.toLowerCase();if(m.includes('api')||m.includes('rest')||m.includes('graphql'))return `**REST vs GraphQL — my take:**\n\nFor a mobile app with 2+ clients, I'd pick **REST first** with a few composite endpoints.\n\n- GraphQL shines when clients need radically different data shapes\n- REST is simpler to cache, monitor, and debug\n\n**Start with these endpoints:**\n\`\`\`\nGET  /feed\nGET  /items/:id\nPOST /items\nPATCH /items/:id\n\`\`\`\n\nWhat does your data model look like?`;if(m.includes('bug')||m.includes('error')||m.includes('fix'))return `Before I can help debug — I need three things:\n\n1. **The exact error message** (full stack trace)\n2. **The code block where it fails**\n3. **What you expected vs what happened**\n\nThe fastest way to find bugs: add a log right before the failure and narrow it down. What are you seeing?`;if(m.includes('refactor')||m.includes('clean'))return `**Refactor rule #1:** Never refactor without tests.\n\nMy approach:\n1. Write characterization tests against the current behavior\n2. Refactor in small steps, running tests after each\n3. Only extract abstractions when you see the same pattern **3+ times**\n\nWhat's the code you want to refactor?`;return `Good question. My instinct: **start with the simplest thing that works, then measure before optimizing**.\n\nBefore writing code:\n- What does "done" look like? (acceptance criteria)\n- What's the expected load / scale?\n\nWhat are you building specifically?`;},
+  'cs-ceo-advisor':(msg)=>{const m=msg.toLowerCase();if(m.includes('raise')||m.includes('fund')||m.includes('investor'))return `**First question: what does the capital unlock that growth can't?**\n\nThe fundraising checklist I use:\n- ✅ 3 months of clean MRR data (churn broken out separately)\n- ✅ A "why now" story — market timing, not just traction\n- ✅ 20 warm intros lined up before you start\n\nWhat's your current MRR and monthly growth rate?`;if(m.includes('hire')||m.includes('team'))return `**Don't hire to fill a role. Hire to remove a specific bottleneck.**\n\nAsk yourself: what is the one thing that, if delegated, would multiply your output the most?\n\n1. **First hire = your weakest skill**\n2. **Never hire ahead of revenue**\n3. **Promote internal before hiring external** for manager roles\n\nWhat role are you considering?`;return `**What decision does this drive?**\n\nTell me the specific trade-off you're facing and what happens if you get it wrong. That's where I can add the most value.`;},
+  'cs-product-manager':(msg)=>{const m=msg.toLowerCase();if(m.includes('prd')||m.includes('spec'))return `**PRD structure I use for every feature:**\n\n**Problem statement** — what customer pain, with evidence\n**Success metrics** — primary + guardrail\n**Non-goals** — what you're explicitly NOT building\n**User stories** — as a [user], I want [action] so that [outcome]\n**Edge cases** — the top 3-5 ways this breaks\n\nWhat feature are you writing the PRD for?`;if(m.includes('priorit')||m.includes('roadmap'))return `**RICE score everything before the conversation:**\n\n| Feature | Reach | Impact | Confidence | Effort | Score |\n|---|---|---|---|---|---|\n| Feature A | 500 | 2 | 80% | 3 | 267 |\n| Feature B | 200 | 3 | 60% | 1 | 360 |\n\nScore = (Reach × Impact × Confidence) / Effort\n\nList your top 5 candidates and let's score them.`;return `**Start with the customer problem, not the solution.**\n\nBefore we talk about what to build:\n1. Who specifically has this problem?\n2. How do they solve it today?\n3. What's the cost of not having a better solution?`;},
+  'cs-content-creator':(msg)=>{const m=msg.toLowerCase();if(m.includes('linkedin')||m.includes('post'))return `**LinkedIn post framework that gets 3-5× more engagement:**\n\n**Hook** (line 1 — make them stop scrolling)\n**Gap** (create curiosity or tension)\n**Insight** (the thing they didn't know)\n**Proof** (specific number or story)\n**CTA** (low-friction ask)\n\nWhat's your product/topic? I'll write a custom version.`;if(m.includes('email')||m.includes('subject'))return `**5 subject line formulas that work:**\n\n1. The specific number: "3 hours back. Every week."\n2. The curiosity gap: "The report that writes itself"\n3. The direct benefit: "Stop losing leads to slow follow-up"\n4. The call-out: "For founders who hate writing reports"\n5. The counter-intuitive: "Why your best feature is invisible"\n\nWhat's the email about?`;return `Tell me:\n1. **What you're promoting**\n2. **Who reads it** (job title + biggest frustration)\n3. **What action you want them to take**`;},
+  'cs-ux-researcher':(msg)=>{const m=msg.toLowerCase();if(m.includes('onboard')||m.includes('conversion')||m.includes('drop'))return `**Onboarding drop-off diagnosis — my 3-step process:**\n\n1. **Find where they leave** — funnel each step in your analytics\n2. **Watch 5 session recordings** — look for rage clicks, hesitation\n3. **Run a 5-user test** — give them the task with no instructions\n\n**Most common root causes:**\n- Asking for commitment before delivering value\n- Too many fields per step (3-field rule)\n- "Aha moment" is too far down the funnel\n\nWhat step has the biggest drop-off?`;return `**Start with the job, not the interface.**\n\n- What is the user trying to accomplish? (one sentence)\n- What's their emotional state when they arrive?\n- What does success look like for them?\n\nWhat are you working on?`;},
+  'startup-cto':(msg)=>{const m=msg.toLowerCase();if(m.includes('build')||m.includes('buy')||m.includes('vendor'))return `**My build vs buy framework:**\n\n**Buy when:** It's not a core competency, time-to-market matters, vendor roadmap aligns\n**Build when:** It's a direct source of competitive advantage\n\n**The trap:** Building auth, payments, or email from scratch. Always buy these.\n\nWhat specifically are you evaluating?`;if(m.includes('stack')||m.includes('technology')||m.includes('framework'))return `**My pragmatic stack for most startups:**\n\n- **Backend:** Node.js (NestJS) or Python (FastAPI)\n- **Frontend:** Next.js\n- **Mobile:** Flutter — single codebase, near-native\n- **Database:** PostgreSQL — boring is good\n- **Infrastructure:** Vercel + Railway — zero DevOps until Series A\n\nWhat are you building?`;return `**What's the actual constraint right now?**\n\nMost technical decisions are trade-offs between: speed of delivery, team bandwidth, and future flexibility.\n\nTell me what you're trying to ship and by when.`;},
 };
-
-// ── State ──────────────────────────────────────────────────────────────────
-let current = AGENTS[0];
-let history = [];
-let sending = false;
-let apiKey = null;
-let replyCounters = {};
-
-// ── API key ────────────────────────────────────────────────────────────────
-function setKey(){
-  const v = document.getElementById('api-key-input').value.trim();
-  if(!v.startsWith('sk-ant')){
-    showToast('Key must start with sk-ant-…');
-    return;
-  }
-  apiKey = v;
-  document.getElementById('mode-badge').className = 'badge badge-live';
-  document.getElementById('mode-badge').textContent = 'LIVE';
-  document.getElementById('live-dot').style.background = '#10b981';
-  document.getElementById('live-lbl').textContent = 'Claude Live';
-  document.getElementById('mode-tag').style.background = '#d1fae5';
-  document.getElementById('mode-tag').style.color = '#065f46';
-  document.getElementById('mode-tag').textContent = 'LIVE';
-  showToast('✅ Connected — real Claude responses enabled!');
-}
-
-// ── Init ───────────────────────────────────────────────────────────────────
-function init(){
-  AGENTS.forEach(a => { replyCounters[a.slug] = 0; });
-  renderSwitcher();
-  loadAgent(AGENTS[0]);
-}
-
-function renderSwitcher(){
-  document.getElementById('switcher').innerHTML = AGENTS.map(a =>
-    `<div class="agent-pill ${a.slug===current.slug?'active':''}"
-      onclick="loadAgent(AGENTS.find(x=>x.slug==='${a.slug}'))"
-      style="${a.slug===current.slug?`color:${a.color}`:''}">
-      ${a.icon} ${a.name}
-    </div>`
-  ).join('');
-}
-
-function loadAgent(agent){
-  current = agent;
-  history = [];
-  sending = false;
-
-  document.getElementById('hd-icon').textContent = agent.icon;
-  document.getElementById('hd-icon').style.background = rgba(agent.color,.12);
-  document.getElementById('hd-name').textContent = agent.name;
-  const dom = document.getElementById('hd-dom');
-  dom.textContent = agent.domain;
-  dom.style.color = agent.color;
-  document.getElementById('send-btn').style.background = agent.color;
-  document.getElementById('send-btn').disabled = false;
-  document.getElementById('ip').style.borderColor = 'transparent';
-  document.getElementById('msg-input').placeholder = `Ask ${agent.name} anything…`;
-
-  document.getElementById('chips-row').innerHTML = agent.chips.map(c=>
-    `<button class="chip"
-      style="background:${rgba(agent.color,.1)};color:${agent.color}"
-      onclick="useChip('${c.replace(/'/g,"\\'")}')">
-      ${c}
-    </button>`
-  ).join('');
-
-  const msgs = document.getElementById('messages');
-  msgs.innerHTML = `<div class="divider"><span>Today</span></div>`;
-  renderSwitcher();
-}
-
-function useChip(t){
-  document.getElementById('msg-input').value = t;
-  send();
-}
-
-// ── Render bubbles ─────────────────────────────────────────────────────────
-function addBubble(role, text, animate=true){
-  const msgs = document.getElementById('messages');
-  const isUser = role==='user';
-  const c = current.color;
-
-  const wrap = document.createElement('div');
-
-  const row = document.createElement('div');
-  row.className = `msg-row ${role}`;
-  if(animate){ row.style.cssText='opacity:0;transform:translateY(8px);transition:all .22s'; }
-
-  const av = document.createElement('div');
-  av.className='av';
-  av.style.background = rgba(c, isUser?.15:.1);
-  av.style.color = c;
-  av.textContent = isUser?'You':'AI';
-
-  const bubble = document.createElement('div');
-  bubble.className = `bubble ${role}`;
-  if(isUser){ bubble.style.background=c; bubble.textContent=text; }
-  else { bubble.innerHTML = md(text); }
-
-  row.appendChild(av); row.appendChild(bubble);
-  wrap.appendChild(row);
-
-  const ts = document.createElement('div');
-  ts.className = `ts ${role}`;
-  ts.textContent = now();
-  wrap.appendChild(ts);
-
-  msgs.appendChild(wrap);
-  if(animate) requestAnimationFrame(()=>{ row.style.opacity='1'; row.style.transform='translateY(0)'; });
-  msgs.scrollTop = msgs.scrollHeight;
-  return bubble;
-}
-
-function showTyping(){
-  const msgs = document.getElementById('messages');
-  const row = document.createElement('div');
-  row.className='typing-row'; row.id='typing';
-
-  const av = document.createElement('div');
-  av.className='av';
-  av.style.background = rgba(current.color,.1);
-  av.style.color = current.color;
-  av.textContent='AI';
-
-  const t = document.createElement('div');
-  t.className='typing';
-  t.innerHTML=`<span style="background:${current.color}"></span><span style="background:${current.color}"></span><span style="background:${current.color}"></span>`;
-
-  row.appendChild(av); row.appendChild(t);
-  msgs.appendChild(row);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function removeTyping(){ document.getElementById('typing')?.remove(); }
-
-// ── Send ───────────────────────────────────────────────────────────────────
-async function send(){
-  const input = document.getElementById('msg-input');
-  const text = input.value.trim();
-  if(!text || sending) return;
-
-  sending=true;
-  input.value=''; input.style.height='auto';
-  document.getElementById('send-btn').disabled=true;
-
-  history.push({role:'user',content:text});
-  addBubble('user', text);
-
-  await sleep(150);
-  showTyping();
-
-  if(apiKey){
-    await callClaude(text);
-  } else {
-    await sleep(500 + Math.random()*600);
-    removeTyping();
-    const reply = DEMO[current.slug]?.(text) || `Tell me more about what you're trying to accomplish and I'll give you my expert take on it.`;
-    history.push({role:'assistant',content:reply});
-    addBubble('assistant', reply);
-  }
-
-  sending=false;
-  document.getElementById('send-btn').disabled=false;
-  input.focus();
-}
-
-async function callClaude(userText){
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-beta':'prompt-caching-2024-07-31'
-      },
-      body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1024,
-        system: current.prompt,
-        messages: history,
-        stream: false
-      })
-    });
-
-    if(!res.ok){
-      const err = await res.json();
-      throw new Error(err.error?.message || res.statusText);
-    }
-
-    const data = await res.json();
-    removeTyping();
-    const reply = data.content?.[0]?.text || '(no response)';
-    history.push({role:'assistant',content:reply});
-    addBubble('assistant', reply);
-  } catch(e){
-    removeTyping();
-    addBubble('assistant', `❌ API error: ${e.message}`);
-    if(e.message?.includes('CORS') || e.message?.includes('fetch')){
-      addBubble('assistant','⚠️ CORS blocked — browsers cannot call the Anthropic API directly. Use the NestJS backend instead (see preview.html).');
-    }
-    sending=false;
-    document.getElementById('send-btn').disabled=false;
-  }
-}
-
-// ── Utils ──────────────────────────────────────────────────────────────────
-function rgba(h,a){
-  const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
-  return `rgba(${r},${g},${b},${a})`;
-}
+let current=AGENTS[0],history=[],sending=false,apiKey=null;
+function setKey(){const v=document.getElementById('api-key-input').value.trim();if(!v.startsWith('sk-ant')){showToast('Key must start with sk-ant-…');return;}apiKey=v;document.getElementById('mode-badge').className='badge badge-live';document.getElementById('mode-badge').textContent='LIVE';document.getElementById('live-dot').style.background='#10b981';document.getElementById('live-lbl').textContent='Claude Live';document.getElementById('mode-tag').style.background='#d1fae5';document.getElementById('mode-tag').style.color='#065f46';document.getElementById('mode-tag').textContent='LIVE';showToast('✅ Connected — real Claude responses enabled!');}
+function init(){renderSwitcher();loadAgent(AGENTS[0]);}
+function renderSwitcher(){document.getElementById('switcher').innerHTML=AGENTS.map(a=>`<div class="agent-pill ${a.slug===current.slug?'active':''}" onclick="loadAgent(AGENTS.find(x=>x.slug==='${a.slug}'))" style="${a.slug===current.slug?`color:${a.color}`:''}"> ${a.icon} ${a.name} </div>`).join('');}
+function loadAgent(agent){current=agent;history=[];sending=false;document.getElementById('hd-icon').textContent=agent.icon;document.getElementById('hd-icon').style.background=rgba(agent.color,.12);document.getElementById('hd-name').textContent=agent.name;const dom=document.getElementById('hd-dom');dom.textContent=agent.domain;dom.style.color=agent.color;document.getElementById('send-btn').style.background=agent.color;document.getElementById('send-btn').disabled=false;document.getElementById('msg-input').placeholder=`Ask ${agent.name} anything…`;document.getElementById('chips-row').innerHTML=agent.chips.map(c=>`<button class="chip" style="background:${rgba(agent.color,.1)};color:${agent.color}" onclick="useChip('${c.replace(/'/g,"\\'")}')"> ${c} </button>`).join('');document.getElementById('messages').innerHTML=`<div class="divider"><span>Today</span></div>`;renderSwitcher();}
+function useChip(t){document.getElementById('msg-input').value=t;send();}
+function addBubble(role,text,animate=true){const msgs=document.getElementById('messages');const isUser=role==='user';const c=current.color;const wrap=document.createElement('div');const row=document.createElement('div');row.className=`msg-row ${role}`;if(animate){row.style.cssText='opacity:0;transform:translateY(8px);transition:all .22s';}const av=document.createElement('div');av.className='av';av.style.background=rgba(c,isUser?.15:.1);av.style.color=c;av.textContent=isUser?'You':'AI';const bubble=document.createElement('div');bubble.className=`bubble ${role}`;if(isUser){bubble.style.background=c;bubble.textContent=text;}else{bubble.innerHTML=md(text);}row.appendChild(av);row.appendChild(bubble);wrap.appendChild(row);const ts=document.createElement('div');ts.className=`ts ${role}`;ts.textContent=now();wrap.appendChild(ts);msgs.appendChild(wrap);if(animate)requestAnimationFrame(()=>{row.style.opacity='1';row.style.transform='translateY(0)';});msgs.scrollTop=msgs.scrollHeight;return bubble;}
+function showTyping(){const msgs=document.getElementById('messages');const row=document.createElement('div');row.className='typing-row';row.id='typing';const av=document.createElement('div');av.className='av';av.style.background=rgba(current.color,.1);av.style.color=current.color;av.textContent='AI';const t=document.createElement('div');t.className='typing';t.innerHTML=`<span style="background:${current.color}"></span><span style="background:${current.color}"></span><span style="background:${current.color}"></span>`;row.appendChild(av);row.appendChild(t);msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;}
+function removeTyping(){document.getElementById('typing')?.remove();}
+async function send(){const input=document.getElementById('msg-input');const text=input.value.trim();if(!text||sending)return;sending=true;input.value='';input.style.height='auto';document.getElementById('send-btn').disabled=true;history.push({role:'user',content:text});addBubble('user',text);await sleep(150);showTyping();if(apiKey){await callClaude(text);}else{await sleep(500+Math.random()*600);removeTyping();const reply=DEMO[current.slug]?.(text)||`Tell me more about what you're trying to accomplish.`;history.push({role:'assistant',content:reply});addBubble('assistant',reply);}sending=false;document.getElementById('send-btn').disabled=false;input.focus();}
+async function callClaude(userText){try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1024,system:current.prompt,messages:history,stream:false})});if(!res.ok){const err=await res.json();throw new Error(err.error?.message||res.statusText);}const data=await res.json();removeTyping();const reply=data.content?.[0]?.text||'(no response)';history.push({role:'assistant',content:reply});addBubble('assistant',reply);}catch(e){removeTyping();addBubble('assistant',`❌ API error: ${e.message}`);sending=false;document.getElementById('send-btn').disabled=false;}}
+function rgba(h,a){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return `rgba(${r},${g},${b},${a})`;}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function now(){
-  return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-}
-function autoResize(el){
-  el.style.height='auto';
-  el.style.height=Math.min(el.scrollHeight,80)+'px';
-}
-function handleKey(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
-}
-function showToast(msg){
-  const t=document.createElement('div');
-  t.className='toast'; t.textContent=msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),3000);
-}
-
-function md(t){
-  return t
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
-    .replace(/`([^`\n]+)`/g,'<code>$1</code>')
-    .replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*([^*\n]+)\*/g,'<em>$1</em>')
-    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,'<h3>$1</h3>')
-    .replace(/^- (.+)$/gm,'<li>$1</li>')
-    .replace(/^(\d)\. (.+)$/gm,'<li>$1. $2</li>')
-    .replace(/(<li>.*<\/li>(\n|$))+/g,'<ul>$&</ul>')
-    .replace(/\n\n+/g,'</p><p>')
-    .replace(/\n/g,'<br>')
-    .replace(/^(?!<[a-z])(.+)/m,'<p>$1</p>');
-}
-
+function now(){return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,80)+'px';}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+function md(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>').replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*\n]+)\*/g,'<em>$1</em>').replace(/^- (.+)$/gm,'<li>$1</li>').replace(/\n\n+/g,'</p><p>').replace(/\n/g,'<br>');}
 init();
 </script>
 </body>
